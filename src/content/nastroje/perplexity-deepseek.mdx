@@ -1,0 +1,70 @@
+---
+title: "DeepSeek"
+description: "Čínský open-source AI model, který šokoval svět. Výkon blízký Claude a GPT za zlomek ceny — ale s otazníky kolem bezpečnosti a dat."
+category: "kod"
+rating: 3
+affiliateUrl: "https://chat.deepseek.com"
+affiliateLabel: "Vyzkoušet DeepSeek"
+pros:
+  - "Open-source model (DeepSeek V3, R1)"
+  - "Výkon srovnatelný s GPT-4o za zlomek ceny"
+  - "Silný v matematice a reasoning (R1)"
+  - "Můžeš provozovat lokálně (Ollama, vLLM)"
+  - "API je extrémně levné"
+cons:
+  - "Čínská firma — otázky kolem dat a cenzury"
+  - "Čeština je výrazně slabší"
+  - "Cenzuruje politicky citlivá témata (Čína)"
+  - "Menší ekosystém nástrojů"
+  - "Nestabilní API (výpadky)"
+pricing: "Chat zdarma / API od $0.27/1M input tokenů (V3)"
+---
+
+## Slon v místnosti
+
+DeepSeek šokoval AI komunitu. Open-source model z Číny, co v benchmarcích konkuruje GPT-4o a Claude Sonnet? Za zlomek ceny? Musel jsem to vyzkoušet.
+
+## Co je na tom pravdy
+
+### Výkon
+
+DeepSeek V3 a R1 jsou legitimně dobré modely. Na kódu a matematice dosahují výsledků blízkých top-tier modelům. R1 (reasoning model) je na některých benchmarcích lepší než o1.
+
+Testoval jsem na reálných úlohách:
+- **Kód (jednoduchý):** Srovnatelný s Sonnet
+- **Kód (komplexní multi-file):** Za Claudem, ale funkční
+- **Matematika/logika:** Překvapivě silný, R1 exceluje
+- **Čeština:** Slabá. Výrazně za Claude i GPT
+
+### Cena
+
+Tady DeepSeek vyhrává absolutně. API za $0.27/1M input tokenů vs. $3 za Sonnet. Desetinásobný rozdíl. Pro batch zpracování a necitlivé úlohy je to zajímavé.
+
+### Open-source
+
+Můžeš si model stáhnout a provozovat lokálně. Přes Ollama to jede na dobrém hardware (A100, RTX 4090). Pro firmy se strict data residency požadavky je to klíčové.
+
+## Proč jen 3 hvězdy
+
+### Bezpečnost a data
+
+DeepSeek je čínská firma. Data zpracovaná přes jejich API podléhají čínským zákonům. Pro osobní projekty — OK. Pro firemní data s NDA — tvrdé ne. Lokální provoz tento problém řeší, ale vyžaduje hardware.
+
+### Cenzura
+
+Zeptej se na Tchaj-wan, Tian'anmen nebo Tibet. DeepSeek buď odmítne odpovědět, nebo dá "diplomatickou" odpověď. Pro politicky neutrální úlohy (kód, math) to nevadí. Pro obecné použití je to dealbreaker.
+
+### Stabilita
+
+API má výpadky. Občas je pomalé, občas nedostupné. Pro produkční nasazení potřebuješ fallback.
+
+## Kdy DeepSeek dává smysl
+
+- Batch zpracování necitlivých dat (cena!)
+- Matematika a reasoning úlohy (R1)
+- Lokální provoz na vlastním hardware
+- Experimentování a prototypování
+
+## Verdikt
+
+DeepSeek je impozantní technický achievement a legitimní volba pro specifické use cases. Ale pro denní práci v češtině, pro citlivá data, pro produkční API? Claude nebo GPT. DeepSeek je fascinující experiment a silný signál, že AI race je globální — ale ne můj daily driver.
