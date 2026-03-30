@@ -4,6 +4,7 @@ import { ArticleCard } from '@/components/ArticleCard'
 import { ToolCard } from '@/components/ToolCard'
 import { ProjectCard } from '@/components/ProjectCard'
 import { HeroParticles } from '@/components/HeroParticles'
+import { PixelMascot } from '@/components/PixelMascot'
 import Link from 'next/link'
 
 export default function HomePage() {
@@ -13,15 +14,57 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Hero — white section with particle animation */}
-      <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden bg-white">
+      {/* Hero — white section with particle animation + mascot */}
+      <section className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden bg-white">
         <HeroParticles />
-        <div className="pointer-events-none relative z-10 mx-auto max-w-2xl px-6 pt-[52vh] text-center">
-          <p className="text-lg leading-relaxed text-muted sm:text-xl">
-            Měsíc s&nbsp;Claudem a už si neumím představit život bez AI.
+
+        {/* Content layer */}
+        <div className="pointer-events-none relative z-10 flex flex-col items-center gap-8 px-6 pt-[42vh]">
+          {/* Subtitle */}
+          <p
+            className="max-w-xl text-center text-lg leading-relaxed text-muted animate-fade-in-up sm:text-xl"
+            style={{ animationDelay: '1.5s' }}
+          >
+            Měsíc s&nbsp;Claudem a&nbsp;už si neumím představit život bez AI.
             Tady píšu o&nbsp;tom co testuji, co funguje a&nbsp;co je hype.
           </p>
+
+          {/* Mascot */}
+          <div className="animate-fade-in-up" style={{ animationDelay: '2.2s' }}>
+            <PixelMascot />
+          </div>
+
+          {/* Tech badges */}
+          <div
+            className="flex flex-wrap justify-center gap-2 animate-fade-in-up"
+            style={{ animationDelay: '2.6s' }}
+          >
+            {['Next.js 15', 'React 19', 'TypeScript', 'Tailwind v4', 'MDX', 'Vercel'].map(
+              (tech) => (
+                <span
+                  key={tech}
+                  className="rounded-full border border-border bg-white/80 px-3 py-1 font-mono text-xs text-muted backdrop-blur-sm"
+                >
+                  {tech}
+                </span>
+              ),
+            )}
+          </div>
         </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute inset-x-0 bottom-8 z-10 flex justify-center">
+          <svg
+            className="h-6 w-6 text-muted/50 animate-scroll-bounce"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7" />
+          </svg>
+        </div>
+
         {/* Subtle divider */}
         <div className="absolute inset-x-0 bottom-0 h-px bg-border" />
       </section>

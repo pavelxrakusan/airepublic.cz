@@ -11,6 +11,30 @@
   --color-border-hover: #cbd5e1;
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --animate-mascot-float: mascot-float 3s ease-in-out infinite;
+  --animate-mascot-shadow: mascot-shadow 3s ease-in-out infinite;
+  --animate-scroll-bounce: scroll-bounce 2s ease-in-out infinite;
+  --animate-fade-in-up: fade-in-up 0.8s ease-out both;
+}
+
+@keyframes mascot-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes mascot-shadow {
+  0%, 100% { transform: scaleX(1); opacity: 0.15; }
+  50% { transform: scaleX(0.75); opacity: 0.08; }
+}
+
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(6px); opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 body {
