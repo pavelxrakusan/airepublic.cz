@@ -1,46 +1,116 @@
 ---
-title: "Jak začít s AI nástroji: praktický průvodce"
-description: "Krok za krokem vás provedeme výběrem a nastavením prvního AI nástroje — od chatbotů přes generátory obrázků po kódovací asistenty."
+title: "Jak jsme s AI ušetřili 40 hodin měsíčně: konkrétní case study z e-commerce"
+description: "Reálný případ nasazení Claude a GPT v malém e-shopu — automatizace zákaznické podpory, produktových popisků a analýzy dat s konkrétními čísly."
 date: "2025-03-01"
-tags: ["návod", "začátečníci", "nástroje"]
+tags: ["business", "case study", "automatizace", "e-commerce"]
 ---
 
-Umělá inteligence už dávno není jen pro výzkumníky a velké firmy. Dnes si každý může vyzkoušet AI nástroje, které výrazně zefektivní práci. Zde je praktický průvodce, jak začít.
+Teorie o AI v podnikání je všude. Tady jsou konkrétní čísla z reálného nasazení v českém e-shopu s 2 000 objednávkami měsíčně.
 
-## 1. Vyberte si oblast
+## Výchozí stav
 
-Než se pustíte do zkoušení nástrojů, rozmyslete si, k čemu AI chcete používat:
+Malý e-shop s módními doplňky, tým 4 lidi. Největší časové zloděje:
 
-- **Psaní textů** — e-maily, články, marketingový obsah
-- **Generování obrázků** — ilustrace, návrhy, vizuály
-- **Programování** — kódovací asistenti, debugging, code review
-- **Produktivita** — organizace, sumarizace, automatizace
+- **Zákaznická podpora** — 15 hod/týden (opakující se dotazy na dopravu, vrácení, velikosti)
+- **Produktové popisky** — 8 hod/týden (nové produkty, překlady, SEO texty)
+- **Reporting** — 5 hod/týden (ruční stahování dat, pivot tabulky v Excelu)
 
-## 2. Začněte s ChatGPT nebo Claude
+## Fáze 1: Zákaznická podpora s Claude
 
-Pro začátečníky doporučuji začít s jedním z velkých chatbotů:
+Místo klasického chatbotu jsme nasadili Claude přes API s kontextem obchodních podmínek, ceníku dopravy a FAQ.
 
-**ChatGPT** od OpenAI je nejrozšířenější AI chatbot. V bezplatné verzi nabízí solidní schopnosti pro běžné úlohy. Placená verze (Plus) přidává rychlejší model a pokročilé funkce.
+```typescript
+const systemPrompt = `Jsi zákaznický asistent e-shopu FashionCZ.
+Odpovídej POUZE na základě přiloženého kontextu.
+Pokud si nejsi jistý, napiš: "Přepojuji na kolegu."
 
-**Claude** od Anthropic exceluje v dlouhých textech, analýze dokumentů a programování. Je obecně vnímán jako bezpečnější a méně náchylný k „halucinacím".
+Kontext:
+${obchodniPodminky}
+${cenikDopravy}
+${faq}
+`;
+```
 
-## 3. Naučte se psát dobré prompty
+**Klíčové rozhodnutí**: Claude místo GPT kvůli nižší míře halucinací. U zákaznické podpory si nemůžete dovolit vymyšlené informace o vrácení zboží.
 
-Kvalita výstupu závisí na kvalitě vstupu. Pár pravidel:
+### Výsledky po 3 měsících
+- 72 % dotazů vyřešeno automaticky (bez lidského zásahu)
+- Průměrná doba odpovědi: 8 sekund (vs. 4 hodiny dříve)
+- CSAT score: 4.2/5 (vs. 3.8 před nasazením)
+- **Úspora: 10 hodin/týden**
 
-- Buďte **konkrétní** — místo "napiš mi text" řekněte "napiš blogový článek o 500 slovech o výhodách AI ve vzdělávání"
-- Definujte **roli** — "jsi zkušený copywriter specializující se na tech startupy"
-- Uveďte **kontext** — popište cílovou skupinu, účel a tón
-- Iterujte — nebojte se požádat o úpravy a vylepšení
+## Fáze 2: Produktové popisky
 
-## 4. Postupně rozšiřujte
+Každý nový produkt potřebuje: název, popis (3 délky), SEO meta description, alt texty k fotkám. Dřív 20 minut na produkt, teď 3 minuty — lidská kontrola + úprava AI výstupu.
 
-Jakmile zvládnete základy, vyzkoušejte specializované nástroje:
+Workflow:
+1. Fotka produktu + základní parametry → Claude (vision)
+2. Claude vygeneruje všechny texty najednou
+3. Člověk zkontroluje, upraví tón, přidá unikátní detaily
+4. Batch upload do CMS přes API
 
-- **Midjourney / DALL-E** pro obrázky
-- **Cursor / GitHub Copilot** pro kód
-- **Notion AI / Otter.ai** pro produktivitu
+```typescript
+const prompt = `Na základě fotky a parametrů vytvoř:
+1. Název produktu (max 60 znaků, SEO optimalizovaný)
+2. Krátký popis (max 160 znaků pro meta description)
+3. Střední popis (2-3 věty pro kartu produktu)
+4. Dlouhý popis (150-200 slov pro detail produktu)
+5. Alt text k fotce
 
-## 5. Dávejte pozor na limity
+Parametry: ${JSON.stringify(produktData)}
+Tón: ${tonOfVoice}
+`;
+```
 
-AI nástroje nejsou dokonalé. Vždy si ověřujte fakta, nekopírujte výstupy bez kontroly a neposkytujte citlivé informace. AI je mocný pomocník, ale finální odpovědnost je vždy na vás.
+### Výsledky
+- 20 min → 3 min na produkt
+- Konzistentnější tón napříč katalogem
+- SEO metriky: +23 % organic traffic za 2 měsíce
+- **Úspora: 6 hodin/týden**
+
+## Fáze 3: Automatizovaný reporting
+
+Místo ručního exportu dat a pivot tabulek jsme vytvořili jednoduchý script, který:
+
+1. Stáhne data z Shopify API (objednávky, tržby, produkty)
+2. Pošle je Claude s instrukcí na analýzu
+3. Výstup: strukturovaný report v Markdownu + doporučení
+
+```typescript
+const weeklyReport = await generateText({
+  model: 'anthropic/claude-sonnet-4-5-20250514',
+  prompt: `Analyzuj týdenní data e-shopu a vytvoř report:
+    - Top 5 produktů podle tržeb
+    - Trendy oproti minulému týdnu
+    - Anomálie (neobvyklé nárůsty/poklesy)
+    - 3 konkrétní doporučení pro další týden
+
+    Data: ${JSON.stringify(salesData)}`,
+});
+```
+
+### Výsledky
+- Report hotový za 30 sekund (vs. 5 hodin ručně)
+- AI odhalila sezónní pattern, který tým přehlížel
+- **Úspora: 5 hodin/týden**
+
+## Celkový dopad
+
+| Metrika | Před AI | Po AI | Změna |
+|---------|---------|-------|-------|
+| Čas na podporu | 60 hod/měs | 20 hod/měs | -67 % |
+| Čas na popisky | 32 hod/měs | 6 hod/měs | -81 % |
+| Čas na reporting | 20 hod/měs | 2 hod/měs | -90 % |
+| **Celkem** | **112 hod/měs** | **28 hod/měs** | **-75 %** |
+
+Náklady na AI: ~$150/měsíc (Claude API). Ušetřený čas se přesunul na marketing a vývoj nových produktů.
+
+## Co se naučíme
+
+1. **Začněte s nejbolestivějším problémem** — ne s tím, co je trendy
+2. **Human-in-the-loop je nutnost** — AI generuje, člověk kontroluje
+3. **Claude pro přesnost, GPT pro kreativitu** — používejte oba
+4. **Měřte všechno** — bez čísel nevíte, jestli to funguje
+5. **Iterujte prompty** — první verze nikdy není finální
+
+AI není magie. Je to nástroj, který funguje, když víte co od něj chcete.

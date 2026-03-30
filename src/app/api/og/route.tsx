@@ -5,7 +5,7 @@ export const runtime = 'edge'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
-  const title = searchParams.get('title') ?? 'AIRepublic.cz'
+  const title = searchParams.get('title') ?? 'airepublic.cz'
   const description = searchParams.get('description') ?? 'Průvodce světem umělé inteligence'
 
   return new ImageResponse(
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
             fontWeight: 700,
           }}
         >
-          AIRepublic.cz
+          airepublic.cz
         </div>
         <div
           style={{

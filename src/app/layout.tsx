@@ -8,15 +8,15 @@ import './globals.css'
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://airepublic.cz'),
   title: {
-    default: 'AIRepublic.cz — Průvodce světem umělé inteligence',
-    template: '%s | AIRepublic.cz',
+    default: 'airepublic.cz — Průvodce světem umělé inteligence',
+    template: '%s | airepublic.cz',
   },
   description:
     'Český AI portál — recenze nástrojů, návody, novinky a vibe coding projekty ze světa umělé inteligence.',
   openGraph: {
     type: 'website',
     locale: 'cs_CZ',
-    siteName: 'AIRepublic.cz',
+    siteName: 'airepublic.cz',
   },
 }
 

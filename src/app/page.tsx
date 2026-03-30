@@ -15,13 +15,14 @@ export default function HomePage() {
       {/* Hero */}
       <section className="py-20 text-center">
         <h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-6xl">
-          <span className="bg-gradient-to-r from-foreground via-accent to-foreground bg-clip-text text-transparent">
-            AIRepublic
+          <span className="font-extrabold text-accent">ai</span>
+          <span className="bg-gradient-to-r from-foreground to-muted bg-clip-text text-transparent">
+            republic
           </span>
         </h1>
         <p className="mx-auto max-w-xl text-lg leading-relaxed text-muted">
-          Průvodce světem umělé inteligence. Recenze nástrojů, praktické návody
-          a vibe&nbsp;coding projekty — vše v češtině.
+          Průvodce světem umělé inteligence. Recenze nástrojů, technické deep&nbsp;divy
+          a reálné use&nbsp;casy AI v podnikání — vše v češtině.
         </p>
       </section>
 

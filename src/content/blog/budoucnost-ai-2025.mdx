@@ -1,33 +1,80 @@
 ---
-title: "Kam směřuje AI v roce 2025?"
-description: "Přehled nejdůležitějších trendů v umělé inteligenci — od multimodálních modelů přes AI agenty až po open-source revoluci."
+title: "Claude pod kapotou: architektura, reasoning a proč je jiný než GPT"
+description: "Technický rozbor architektury Claude od Anthropic — constitutional AI, extended thinking, kontextové okno 200k tokenů a srovnání s konkurencí."
 date: "2025-03-15"
-tags: ["trendy", "AI", "2025"]
+tags: ["Claude", "architektura", "LLM", "technický rozbor"]
 ---
 
-Rok 2025 přináší v oblasti umělé inteligence zásadní změny. Podívejme se na nejdůležitější trendy, které ovlivní, jak s AI pracujeme.
+Claude od Anthropic je v mnoha benchmarcích na špičce. Ale co ho skutečně odlišuje od GPT nebo Gemini? Pojďme se podívat pod kapotu.
 
-## Multimodální modely jsou nový standard
+## Constitutional AI: jiný přístup k alignmentu
 
-Éra čistě textových modelů je za námi. Moderní AI systémy jako GPT-5, Claude 4 nebo Gemini 2 pracují s textem, obrázky, videem i zvukem současně. To otevírá zcela nové možnosti — od analýzy dokumentů s grafy přes generování videa až po interaktivní hlasové asistenty.
+Zatímco OpenAI sází primárně na RLHF (Reinforcement Learning from Human Feedback), Anthropic přišel s konceptem **Constitutional AI (CAI)**. Model dostane sadu principů — "ústavu" — a učí se sám sebe hodnotit a opravovat podle těchto pravidel.
 
-## AI agenti mění pravidla hry
+V praxi to znamená, že Claude je obecně méně náchylný k jailbreakům a konzistentněji dodržuje instrukce. Na druhou stranu bývá občas příliš opatrný — odmítne i neškodné requesty, pokud je vyhodnotí jako potenciálně problematické.
 
-Největší posun roku 2025 jsou autonomní AI agenti. Místo jednorázových odpovědí na otázky dokáží agenti plánovat, používat nástroje a řešit složité úlohy krok po kroku. Nástroje jako Vercel AI SDK nebo LangChain umožňují vývojářům vytvářet agenty, kteří:
+## Extended thinking: chain-of-thought na steroidech
 
-- Prohledávají web a sbírají informace
-- Spouští kód a analyzují výsledky
-- Komunikují s externími API
-- Spolupracují s dalšími agenty
+Claude Opus a Sonnet podporují **extended thinking** — model před finální odpovědí prochází explicitním reasoning procesem. Na rozdíl od OpenAI o1/o3, kde je chain-of-thought skrytý, u Claude si můžete reasoning prohlédnout.
 
-## Open-source modely dohánějí komerční
+```
+// Příklad: API call s extended thinking
+const response = await anthropic.messages.create({
+  model: "claude-sonnet-4-5-20250514",
+  max_tokens: 16000,
+  thinking: {
+    type: "enabled",
+    budget_tokens: 10000
+  },
+  messages: [{ role: "user", content: "Analyzuj tuto architekturu..." }]
+});
+```
 
-Modely jako Llama 3, Mistral a DeepSeek ukazují, že open-source AI může konkurovat komerčním řešením. Pro mnoho use-casů dnes není nutné platit za proprietární API — stačí spustit model lokálně nebo na vlastním serveru.
+Extended thinking dramaticky zlepšuje výsledky u:
+- Matematických a logických úloh
+- Analýzy kódu a debugging
+- Složitých rozhodovacích procesů
+- Porovnání více variant řešení
 
-## Vibe coding: programování budoucnosti
+## Kontextové okno: 200k tokenů a proč na tom záleží
 
-Termín "vibe coding" popisuje nový přístup k vývoji software, kde vývojář spolupracuje s AI na tvorbě kódu. Místo psaní každého řádku ručně popíšete, co chcete vytvořit, a AI vygeneruje funkční kód. Nástroje jako Cursor, v0 nebo Claude Code tento přístup posouvají na novou úroveň.
+Claude nabízí 200 000 tokenů kontextu — to je zhruba 500 stran textu. GPT-4 Turbo má 128k, Gemini 1.5 Pro teoreticky až 2M, ale s výrazně klesající kvalitou na dlouhých vstupech.
 
-## Co nás čeká dál?
+Klíčový rozdíl není jen velikost, ale **kvalita retrievalu**. V needle-in-a-haystack testech Claude konzistentně nachází informace kdekoliv v kontextu, zatímco jiné modely mají tendenci "zapomínat" prostředek.
 
-Rok 2025 je teprve začátek. Očekávejte rychlejší modely, lepší reasoning, pokročilejší agenty a stále dostupnější AI nástroje pro každého.
+Praktické využití:
+- Analýza celých codebases (Claude Code načte celý repo)
+- Zpracování právních dokumentů nebo smluv
+- Code review s plným kontextem projektu
+- Sumarizace rozsáhlých research paperů
+
+## Claude Code: AI v terminálu
+
+Jeden z nejzajímavějších produktů Anthropic je **Claude Code** — CLI nástroj, který přímo pracuje s vaším kódem. Na rozdíl od GitHub Copilot, který doplňuje řádky, Claude Code:
+
+- Naviguje repozitář a chápe strukturu projektu
+- Píše, edituje a refaktoruje soubory
+- Spouští testy a opravuje chyby
+- Commituje a vytváří pull requesty
+- Pracuje s MCP servery pro přístup k externím nástrojům
+
+Tento web je živý důkaz — byl kompletně vygenerován přes Claude Code v jedné session.
+
+## Srovnání s konkurencí (březen 2025)
+
+| Oblast | Claude Sonnet | GPT-4o | Gemini 2 Pro |
+|--------|--------------|--------|--------------|
+| Kód | Výborný | Velmi dobrý | Dobrý |
+| Dlouhé dokumenty | Exceluje | Průměrný | Dobrý (ale nestabilní) |
+| Reasoning | Silný (ext. thinking) | Silný (o3) | Průměrný |
+| Multimodalita | Text + obrázky | Text + obrázky + audio + video | Nejširší |
+| Cena (1M input tokenů) | $3 | $2.50 | $1.25 |
+| Hallucinations | Nejnižší | Střední | Vyšší |
+
+## Kdy použít co?
+
+- **Claude** — programování, analýza dokumentů, přesné instrukce, code review
+- **GPT-4o/o3** — kreativní psaní, multimodální úlohy, ekosystém pluginů
+- **Gemini** — práce s velkými daty, integrace s Google ekosystémem, cena
+
+Žádný model není univerzálně nejlepší. Klíč je znát silné stránky každého a používat správný nástroj pro daný úkol.

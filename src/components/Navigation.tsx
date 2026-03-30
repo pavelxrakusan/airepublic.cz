@@ -18,7 +18,7 @@ export function Navigation() {
     <header className="fixed top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
       <nav className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
         <Link href="/" className="font-mono text-sm font-bold tracking-tight text-foreground">
-          AIRepublic<span className="text-accent">.cz</span>
+          <span className="font-extrabold text-accent">ai</span>republic<span className="text-muted">.cz</span>
         </Link>
         <ul className="flex items-center gap-1">
           {links.map(({ href, label }) => {

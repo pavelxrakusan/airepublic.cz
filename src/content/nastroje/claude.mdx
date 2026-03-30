@@ -1,38 +1,89 @@
 ---
 title: "Claude"
-description: "AI asistent od Anthropic zaměřený na bezpečnost, přesnost a práci s dlouhými dokumenty."
+description: "Nejpřesnější AI asistent na trhu — constitutional AI, 200k kontextové okno, extended thinking a Claude Code pro vývojáře."
 category: "produktivita"
 rating: 5
 affiliateUrl: "https://claude.ai"
 affiliateLabel: "Vyzkoušet Claude"
 pros:
-  - "Vynikající práce s dlouhými dokumenty (200k tokenů)"
-  - "Velmi přesný a méně náchylný k halucinacím"
-  - "Skvělý pro programování a code review"
+  - "200k tokenů kontextu s výborným retrievalem"
+  - "Nejnižší míra halucinací mezi velkými modely"
+  - "Extended thinking pro složité reasoning úlohy"
+  - "Claude Code — plnohodnotný AI vývojářský nástroj"
   - "Artifacts — interaktivní výstupy přímo v chatu"
+  - "Silný v češtině a dalších evropských jazycích"
 cons:
-  - "Menší ekosystém než ChatGPT"
-  - "Občas příliš opatrný v odpovědích"
-  - "Nedostupný v některých zemích"
-pricing: "Zdarma (limitovaně) / Pro $20/měs / Team $25/měs"
+  - "Občas příliš opatrný (odmítá neškodné requesty)"
+  - "Menší ekosystém pluginů než ChatGPT"
+  - "API rate limity na free tieru jsou nízké"
+pricing: "Zdarma (limitovaně) / Pro $20/měs / Team $25/měs / API od $3/1M tokenů"
 ---
 
-## Co je Claude?
+## Proč Claude?
 
-Claude je AI asistent vyvinutý společností Anthropic, kterou založili bývalí výzkumníci z OpenAI. Zaměřuje se na bezpečnost, přesnost a schopnost pracovat s rozsáhlým kontextem.
+Claude od Anthropic je AI asistent postavený s důrazem na přesnost, bezpečnost a schopnost pracovat s rozsáhlým kontextem. Po roce intenzivního používání ho považuji za nejlepší volbu pro profesionální práci — zejména programování, analýzu dokumentů a strukturované úlohy.
 
-## Pro koho je?
+## Modelová řada
 
-Claude je ideální pro profesionály, kteří potřebují spolehlivého AI asistenta pro náročné úlohy. Exceluje v analýze dlouhých dokumentů, programování, akademickém psaní a strukturované argumentaci. Díky funkci Artifacts můžete vytvářet interaktivní výstupy přímo v konverzaci.
+**Claude Opus** — nejmocnější model. Exceluje v komplexních reasoning úlohách, analýze kódu a situacích vyžadujících hluboké pochopení kontextu. Pomalejší, dražší, ale výsledky jsou znatelně lepší.
 
-## Claude Code
+**Claude Sonnet** — nejlepší poměr výkon/cena. Pro 90 % úloh je Sonnet dostačující a výrazně rychlejší než Opus. Doporučuji jako výchozí model.
 
-Jednou z nejzajímavějších novinek je Claude Code — terminálový nástroj pro vývojáře, který umožňuje AI přímo pracovat s vaším kódem. Dokáže navigovat repozitáře, psát a editovat soubory, spouštět testy a commitovat změny.
+**Claude Haiku** — nejrychlejší a nejlevnější. Ideální pro jednoduché klasifikace, extrakce dat a real-time aplikace, kde záleží na latenci.
 
-## Jak se liší od ChatGPT?
+## Extended thinking
 
-Claude nabízí delší kontextové okno (až 200 000 tokenů oproti 128 000 u GPT-4), je obecně přesnější v analytických úlohách a lépe dodržuje instrukce. ChatGPT má naopak větší ekosystém pluginů a lepší podporu multimodality.
+Claude Opus a Sonnet umožňují zapnout explicitní reasoning — model před odpovědí "přemýšlí" a ukazuje vám svůj myšlenkový proces. Na rozdíl od OpenAI o1/o3, kde je chain-of-thought skrytý, u Claude vidíte celý postup.
+
+V praxi to zásadně zlepšuje:
+- Matematické a logické problémy
+- Debugging složitého kódu
+- Rozhodování mezi více variantami
+- Analýzu kontraktů a právních textů
+
+## Claude Code — killer feature pro vývojáře
+
+Claude Code je CLI nástroj, který mění způsob, jakým programuji. Není to autocomplete jako Copilot — je to agent, který chápe celý projekt:
+
+- **Naviguje repozitář** a rozumí struktuře
+- **Píše a edituje soubory** podle vysokoúrovňových instrukcí
+- **Spouští testy** a opravuje nalezené chyby
+- **Commituje a vytváří PR** s rozumnými commit messages
+- **MCP integrace** pro přístup k databázím, API, Figma a dalším nástrojům
+
+Tento web byl kompletně vytvořen přes Claude Code — od scaffoldu přes komponenty po Docker konfiguraci a deploy na Vercel.
+
+## API a integrace
+
+Claude API je straightforward a dobře zdokumentované. Podporuje:
+
+- **Messages API** s system prompty a multi-turn konverzacemi
+- **Vision** — analýza obrázků, screenshotů, dokumentů
+- **Tool use** — strukturované volání externích funkcí
+- **Streaming** pro real-time odpovědi
+- **Batches** pro hromadné zpracování
+
+Skvěle funguje s Vercel AI SDK — jeden řádek kódu pro přepnutí mezi Claude, GPT nebo Gemini.
+
+## Srovnání s ChatGPT
+
+| Oblast | Claude | ChatGPT |
+|--------|--------|---------|
+| Přesnost | Vyšší, méně halucinací | Dobrá, ale občas vymýšlí |
+| Kód | Výborný, zvlášť s Code | Velmi dobrý s Copilot |
+| Dlouhé dokumenty | Exceluje (200k) | Průměrný (128k, slabší retrieval) |
+| Kreativita | Dobrý | Lepší pro kreativní psaní |
+| Ekosystém | Menší, rostoucí | GPT Store, pluginy |
+| Multimodalita | Text + obrázky | Text + obrázky + audio + video |
+
+## Pro koho je Claude?
+
+- **Vývojáři** — Claude Code je game changer
+- **Analytici** — přesná práce s daty a dokumenty
+- **Právníci/konzultanti** — spolehlivá analýza rozsáhlých textů
+- **Marketéři** — konzistentní a fakticky přesný obsah
+- **Kdokoli**, kdo potřebuje spolehlivost nad kreativitou
 
 ## Verdikt
 
-Claude je momentálně jeden z nejlepších AI asistentů na trhu — zejména pro vývojáře a profesionály, kteří potřebují spolehlivost a přesnost. Kombinace dlouhého kontextu, Artifacts a Claude Code z něj dělá výjimečný nástroj.
+Claude je nejlepší AI asistent pro profesionální práci. Kombinace přesnosti, dlouhého kontextu, extended thinking a Claude Code z něj dělá nástroj, bez kterého si už nedovedu představit svůj workflow. Pokud jste vývojář nebo pracujete s textem a daty, vyzkoušejte ho — a začněte se Sonnetem.

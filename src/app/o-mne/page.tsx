@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'O mně',
-  description: 'Kdo stojí za AIRepublic.cz — průvodcem světem umělé inteligence.',
+  description: 'Kdo stojí za airepublic.cz — průvodcem světem umělé inteligence.',
 }
 
 export default function AboutPage() {
@@ -13,7 +13,7 @@ export default function AboutPage() {
       </header>
       <div className="prose">
         <p>
-          Jsem nadšenec do umělé inteligence a technologií. AIRepublic.cz jsem
+          Jsem nadšenec do umělé inteligence a technologií. airepublic.cz jsem
           založil jako místo, kde sdílím své zkušenosti s AI nástroji, píšu
           praktické návody a dokumentuji své vibe&nbsp;coding projekty.
         </p>
