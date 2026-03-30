@@ -1,0 +1,100 @@
+---
+title: "Vibe coding s Claude Code: jak stavím projekty v roce 2026"
+description: "Vibe coding není buzzword — je to reálný způsob jak stavět software. Ukazuju svůj workflow s Claude Code od nápadu po deploy."
+date: "2026-03-25"
+tags: ["Claude Code", "vibe coding", "workflow", "Next.js"]
+---
+
+Vibe coding. Zní to jako něco, co si vymyslel influencer na TikToku. Ale je to nejpřesnější popis toho, jak dneska reálně programuji.
+
+## Co to vlastně je?
+
+Vibe coding = popisuješ **co chceš** a AI píše **jak to udělat**. Neříkám, že neprogramuji — říkám, že programuji na jiné úrovni abstrakce. Místo psaní syntaxe myslím nad architekturou, UX a business logikou.
+
+Je to jako rozdíl mezi psaním assembleru a TypeScriptu. Stále programuješ, jen se posouváš nahoru.
+
+## Můj stack
+
+- **Claude Code** — hlavní nástroj, běží v terminálu, pracuje přímo s repem
+- **Next.js 15** — framework, App Router, Server Components
+- **Cursor** — editor s AI integrací (ale většinu dělám v terminálu)
+- **Docker** — lokální vývoj i deploy
+- **Vercel** — hosting a preview deploye
+
+## Reálný workflow: jak vznikl tento web
+
+Sedl jsem si s jasnou vizí: chci český AI portál. Dark hero s particle animací, light content, MDX články, recenze nástrojů. Tady je jak to šlo:
+
+### Krok 1: Scaffold (5 minut)
+
+```
+> claude "vytvoř Next.js 15 projekt s TypeScript strict,
+  Tailwind v4, App Router. Přidej MDX support přes
+  next-mdx-remote v6. Struktura: blog, nastroje, projekty,
+  o-mne. Geist font. Docker support."
+```
+
+Claude Code vytvořil celou strukturu — `app/` router, komponenty, typy, MDX parser, Dockerfile. Ne generický boilerplate, ale promyšlená architektura.
+
+### Krok 2: Iterace designu (30 minut)
+
+Tady začíná "vibe" část. Říkal jsem věci jako:
+
+- "hero chci s particle animací, text se složí z bodů v barvách české vlajky"
+- "přejdeme na light skin"
+- "bílou ve vlajce nahraď světle šedou"
+- "nápis má být větší, víc bodů"
+
+Každá instrukce → Claude upravil kód → refreshnul jsem prohlížeč → další instrukce. Žádné skákání mezi Stack Overflow, dokumentací a IDE. Prostě konverzace.
+
+### Krok 3: Obsah (průběžně)
+
+Články píšu sám, ale Claude pomáhá s:
+- Strukturou (nadpisy, flow textu)
+- Code examples (ověří syntaxi)
+- SEO meta descriptions
+- Konzistencí tónu
+
+### Krok 4: Deploy (2 minuty)
+
+```
+> claude "přidej Dockerfile s multi-stage buildem pro produkci"
+```
+
+Hotovo. `docker build && docker run`. Funguje.
+
+## Co funguje skvěle
+
+**Rychlost iterace.** Od nápadu po funkční kód jsou to minuty, ne hodiny. To zásadně mění způsob, jakým přemýšlíš o projektech — zkusíš víc věcí, experimentuješ víc, protože cena experimentu je nízká.
+
+**Kontextové povědomí.** Claude Code čte tvůj repozitář. Když řekneš "přidej novou stránku," ví jaká je struktura, jaké máš komponenty, jaký je naming. Nemusíš vysvětlovat.
+
+**Refactoring bez bolesti.** "Přesuň tuhle logiku do custom hooku" → hotovo. "Rozděl tuhle komponentu na tři menší" → hotovo. Věci, které bys normálně odkládal, protože jsou otravné.
+
+## Co nefunguje (zatím)
+
+**Komplexní business logika.** U payment systémů nebo auth flows chceš vědět přesně co se děje. Tady vibe coding končí a začíná klasické programování — s Claudem jako konzultantem, ne pilotem.
+
+**Pixel-perfect design.** Claude napíše Tailwind třídy, ale finální tuning (spacing, barvy, animace) stejně děláš ty. AI nemá tvůj estetický cit.
+
+**Debugging edge cases.** Na 80 % bugů je Claude skvělý. Na ty zbylé 20 % potřebuješ vlastní hlavu — a Claude jako rubber duck.
+
+## Proč to není podvod
+
+Občas slyším: "To není programování, to je jen prompting." Na to říkám:
+
+1. Pořád musíš vědět co chceš — a to je ta těžká část
+2. Pořád musíš rozumět kódu, co ti Claude napíše
+3. Pořád musíš umět debuggovat, když něco nefunguje
+4. Architektonická rozhodnutí dělá člověk, ne AI
+
+Vibe coding je evoluce, ne náhrada. Jako IDE nebyla náhrada za textový editor — byl to nástroj, co ti dovolil myslet na vyšší úrovni.
+
+## Jak začít
+
+1. Nainstaluj Claude Code (`npm install -g @anthropic-ai/claude-code`)
+2. Otevři terminál ve svém projektu
+3. Napiš `claude` a řekni co chceš
+4. Iteruj
+
+Nemusíš hned stavět celé projekty. Zkus: "refaktoruj tuhle funkci" nebo "napiš testy pro tenhle modul." Postupně si najdeš svůj vibe.

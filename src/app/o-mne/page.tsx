@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <>
+    <div className="mx-auto max-w-5xl px-6 pt-24 pb-16">
       <header className="mb-12">
         <h1 className="mb-4 text-4xl font-bold tracking-tight">O mně</h1>
       </header>
@@ -43,6 +43,6 @@ export default function AboutPage() {
           <a href="mailto:info@airepublic.cz">info@airepublic.cz</a>.
         </p>
       </div>
-    </>
+    </div>
   )
 }

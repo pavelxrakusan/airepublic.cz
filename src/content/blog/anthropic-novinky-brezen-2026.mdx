@@ -1,0 +1,79 @@
+---
+title: "Co nového u Anthropic: březnový přehled s mým komentářem"
+description: "Souhrn novinek od Anthropic za březen 2026 — Claude Code updaty, nové MCP funkce, enterprise features a co to znamená pro nás smrtelníky."
+date: "2026-03-29"
+tags: ["Anthropic", "novinky", "Claude Code", "březen 2026"]
+---
+
+Anthropic poslední dobou jede na plný plyn. Tady je přehled toho, co se dělo v březnu 2026 — a ke každé novince přidávám svůj pohled.
+
+## Claude Code dostává hooks a superpowers
+
+Asi největší novinka pro mě osobně. Claude Code teď podporuje **hooks** — automatizované akce, které se spustí při určitých událostech. Například:
+
+- Před každým commitem automaticky spustí linting
+- Po editaci souboru zkontroluje typy
+- Při startu session načte kontext projektu z CLAUDE.md
+
+**Můj komentář:** Tohle je game changer pro konzistenci. Dřív jsem občas commitnul něco, co neprojde lintem. Teď to hook zachytí automaticky. A CLAUDE.md soubor — to je jako README pro AI. Popíšeš v něm projekt a Claude Code to čte při každé session. Geniální jednoduchost.
+
+Navíc přibyla **skills** — předpřipravené instrukce pro specifické úlohy. Brainstorming, code review, test-driven development. Claude Code se z terminálu stává plnohodnotné vývojářské prostředí.
+
+## MCP: OAuth a remote servery
+
+MCP dostal **OAuth autentizaci** pro remote servery. To znamená, že můžeš bezpečně připojit Claude k cloud službám — ne jen lokálním serverům.
+
+**Můj komentář:** Tohle jsem čekal. Lokální MCP servery byly skvělé pro development, ale pro produkční nasazení jsi potřeboval bezpečnou autentizaci. OAuth řeší 90 % enterprise use cases. Zbývající otázka je audit log — kdo co kdy četl? Na tom Anthropic údajně pracuje.
+
+## Vercel AI Gateway s Claude
+
+Vercel spustil **AI Gateway** s nativní Claude podporou. Jedno API, automatický failover mezi providery, cost tracking, zero data retention.
+
+**Můj komentář:** Tohle je přesně to, co jsem potřeboval. Místo přímého volání Anthropic API teď jde všechno přes gateway. Výhody:
+- Automatický fallback na jiný model, když Claude API má výpadek
+- Přehled nákladů na jednom místě
+- OIDC autentizace — žádné API klíče v .env souborech
+
+Pro side projekty jako je tenhle web to je možná overkill. Pro produkční aplikace je to must-have.
+
+## Claude pro enterprise: SOC 2 Type II
+
+Anthropic získal **SOC 2 Type II** certifikaci. Pro nerdy: to znamená, že nezávislý auditor ověřil, že Anthropic má funkční bezpečnostní kontroly — ne jen na papíře, ale v praxi po dobu minimálně 6 měsíců.
+
+**Můj komentář:** Tohle je nudná novinka, která je ve skutečnosti obrovská. Spousta firem nemohla Claude nasadit, protože compliance tým řekl "nemají SOC 2." Teď mají. Čekám vlnu enterprise adoptions v Q2.
+
+## Artifacts 2.0
+
+Claude.ai dostal **vylepšené Artifacts** — interaktivní výstupy, které můžeš sdílet jako link. Včetně:
+- React komponenty (live preview)
+- Mermaid diagramy
+- Interaktivní tabulky a grafy
+- Markdown dokumenty s exportem do PDF
+
+**Můj komentář:** Artifacts používám na rychlé prototypy. "Udělej mi React komponentu pro pricing tabulku" → kliknu → živý preview → sdílím link s klientem. Je to jako CodePen, ale napájený AI. Verze 2.0 je rychlejší a stabilnější.
+
+## Co čekám v dubnu
+
+Na základě toho, co Anthropic naznačoval:
+
+1. **Claude Code v IDE** — rozšíření pro VS Code a JetBrains, ne jen terminál
+2. **Vylepšený vision** — lepší analýza screenshotů a designů
+3. **Longer context for Sonnet** — Sonnet 4 by mohl dostat 500k+ kontext
+
+To poslední by bylo zásadní — Opus s 200k je skvělý, ale Sonnet s půl milionem tokenů by pokryl skoro každý use case za třetinovou cenu.
+
+## Shrnutí
+
+Anthropic v březnu 2026 ukázal, že nespí:
+
+| Novinka | Impact pro vývojáře |
+|---------|-------------------|
+| Claude Code hooks | Vysoký — automatizace workflow |
+| MCP OAuth | Vysoký — enterprise integrace |
+| AI Gateway (Vercel) | Střední — jednodušší deployment |
+| SOC 2 Type II | Střední — enterprise adoption |
+| Artifacts 2.0 | Nízký — nice to have |
+
+Celkově? Dobrý měsíc pro Claude ekosystém. A mě baví sledovat, jak Anthropic postupně buduje ne jen model, ale celou platformu kolem něj. To je to, co z nich dělá víc než jen "AI firmu" — dělá z nich vývojářskou platformu.
+
+Uvidíme se u dubnového přehledu.

@@ -8,7 +8,7 @@ function StarRating({ rating }: { rating: number }) {
       {Array.from({ length: 5 }, (_, i) => (
         <svg
           key={i}
-          className={`h-4 w-4 ${i < rating ? 'text-accent' : 'text-border'}`}
+          className={`h-4 w-4 ${i < rating ? 'text-amber-500' : 'text-border'}`}
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -23,10 +23,10 @@ export function ToolCard({ tool }: { tool: ContentItem<Tool> }) {
   return (
     <Link
       href={`/nastroje/${tool.slug}`}
-      className="group block rounded-lg border border-border bg-card p-6 transition-all hover:border-border-hover"
+      className="group block rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:border-border-hover hover:shadow-md"
     >
       <div className="mb-3 flex items-center justify-between">
-        <span className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted">
+        <span className="rounded-full border border-border bg-white px-2.5 py-0.5 text-xs text-muted">
           {getCategoryLabel(tool.frontmatter.category)}
         </span>
         <StarRating rating={tool.frontmatter.rating} />

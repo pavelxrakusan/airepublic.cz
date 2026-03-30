@@ -12,7 +12,7 @@ export default function NastrojePage() {
   const tools = getAllContent<Tool>('nastroje')
 
   return (
-    <>
+    <div className="mx-auto max-w-5xl px-6 pt-24 pb-16">
       <header className="mb-12">
         <h1 className="mb-4 text-4xl font-bold tracking-tight">AI Nástroje</h1>
         <p className="text-lg text-muted">
@@ -24,6 +24,6 @@ export default function NastrojePage() {
           <ToolCard key={tool.slug} tool={tool} />
         ))}
       </div>
-    </>
+    </div>
   )
 }

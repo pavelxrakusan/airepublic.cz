@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="cs" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <Navigation />
-        <main className="mx-auto max-w-5xl px-6 pt-24 pb-16">{children}</main>
+        <main>{children}</main>
         <Footer />
       </body>
     </html>

@@ -1,0 +1,80 @@
+---
+title: "Měsíc s Claudem: z 'hele, zkusím to' na 'jak jsem bez toho žil?'"
+description: "Upřímná zpověď vývojáře, který před 30 dny poprvé otevřel Claude a dneska nedá bez něj ani commit. Co mě překvapilo, co mě štvalo a proč jsem zůstal."
+date: "2026-03-28"
+tags: ["Claude", "osobní zkušenost", "vibe coding", "produktivita"]
+---
+
+Před měsícem jsem si řekl, že zkusím Claude. Nic víc. Žádný závazek, žádné expectations. Copilot mi fungoval dobře, GPT jsem používal na texty, život byl fajn.
+
+Dneska píšu tenhle článek a Claude mi pomáhá s formulacemi. A já s tím nemám nejmenší problém.
+
+## Týden 1: Skeptik
+
+Začal jsem s Claude.ai, free tier. První věc co jsem zkusil — hodil jsem mu kus legacy kódu a řekl "vysvětli mi co to dělá." A on to vysvětlil. Ne jako dokumentace, ale jako kolega, co ten kód napsal a teď ti ho předává.
+
+To mě zaujalo. Ale pořád jsem si říkal — GPT to taky umí, ne?
+
+Rozdíl jsem poznal u delšího kontextu. Hodil jsem mu celý README, 3 soubory s konfigurací a zeptal se na konkrétní dependency conflict. Claude si přečetl **všechno** a odpověděl přesně. GPT v podobné situaci občas "zapomněl" první soubor.
+
+## Týden 2: Zvědavec
+
+Upgradnul jsem na Pro ($20/měs). Hlavně kvůli **Claude Code** — CLI nástroj, co přímo pracuje s tvým repozitářem.
+
+První session s Claude Code:
+
+```
+> claude "přidej dark mode toggle do navigation komponenty"
+```
+
+A on to udělal. Přečetl si existující kód, pochopil strukturu, přidal toggle, upravil Tailwind config, přidal CSS proměnné. Commitnul s rozumnou zprávou.
+
+Seděl jsem u monitoru a říkal si: "Tohle je jako pair programming, ale ten druhý nikdy neodejde na kafe."
+
+## Týden 3: Závislák
+
+Tady to přešlo z "používám" na "potřebuji." Claude Code se stal mým default nástrojem pro:
+
+- **Scaffolding** — "postav mi Next.js projekt s TypeScriptem, Tailwindem a MDX"
+- **Debugging** — "testy padají na tomhle řádku, proč?"
+- **Refactoring** — "přepiš tuhle komponentu na Server Component"
+- **Code review** — "podívej se na tenhle PR a řekni mi co je špatně"
+
+Nejvíc mě překvapilo, jak dobře rozumí **kontextu projektu**. Nemusíš mu pokaždé vysvětlovat strukturu — přečte si soubory, podívá se na git historii a pochopí co se děje.
+
+## Týden 4: Evangelista
+
+Tento web (airepublic.cz) je živý důkaz. Kompletně postavený s Claude Code — od `npx create-next-app` po Docker deployment. Včetně:
+
+- Next.js 15 App Router s TypeScript strict mode
+- MDX content systém s frontmatter
+- Particle animace hero sekce (tuhle mi Claude napsal celou)
+- Tailwind v4 s custom theme
+- OG image generátor
+- Docker multi-stage build
+
+Nebyl to copy-paste z ChatGPT. Byla to konverzace: "chci tohle" → Claude to napsal → "změň tamto" → Claude upravil → "super, commitni." Jako skutečný pair programming.
+
+## Co mě štvalo (protože žádný nástroj není dokonalý)
+
+**Občasná přehnaná opatrnost.** Zeptáš se na legitimní security téma a Claude začne přednášet o etice. Chápu proč to dělají, ale někdy je to frustrující.
+
+**Rate limity na Pro.** Při intenzivním code sessions narazíš na limit. Naučil jsem se rozdělit práci na menší kousky — což je vlastně dobrá programátorská praxe, takže díky, Claude.
+
+**Extended thinking** je skvělé, ale někdy přemýšlí zbytečně dlouho nad jednoduchým problémem. Jako ten kolega, co analyzuje 20 minut kam jít na oběd.
+
+## Čísla po 30 dnech
+
+| Metrika | Před Claudem | S Claudem |
+|---------|-------------|-----------|
+| Nový projekt setup | 2-3 hodiny | 20 minut |
+| Code review čas | 45 min | 15 min |
+| Debugging session | "jak dlouho máš?" | 5-10 min |
+| Commit messages | "fix stuff" | Smysluplné popisy |
+| Dokumentace | "udělám to zítra" | Generuje se průběžně |
+
+## Zůstanu?
+
+100 %. Claude Pro za $20/měs je nejlepší investice do mé produktivity. A Claude Code je důvod proč. Ne proto, že píše kód za mě — proto, že **myslí se mnou**.
+
+Jestli jsi vývojář a ještě jsi Claude nezkoušel — dej tomu týden. Ale varuju: cesta zpět neexistuje.

@@ -5,7 +5,7 @@ export function ArticleCard({ post }: { post: ContentItem<BlogPost> }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group block rounded-lg border border-border bg-card p-6 transition-all hover:border-border-hover"
+      className="group block rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:border-border-hover hover:shadow-md"
     >
       <div className="mb-3 flex items-center gap-3 text-xs text-muted">
         <time dateTime={post.frontmatter.date}>
@@ -29,7 +29,7 @@ export function ArticleCard({ post }: { post: ContentItem<BlogPost> }) {
           {post.frontmatter.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted"
+              className="rounded-full border border-border bg-white px-2.5 py-0.5 text-xs text-muted"
             >
               {tag}
             </span>

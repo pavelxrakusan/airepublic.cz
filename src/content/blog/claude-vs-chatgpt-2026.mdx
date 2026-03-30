@@ -1,0 +1,100 @@
+---
+title: "Claude vs. ChatGPT v roce 2026: upřímné srovnání od člověka co používá oba"
+description: "Žádný fanboyismus (ok, trochu). Reálné srovnání Claude a ChatGPT v roce 2026 — co je lepší na co, kde který vyhrává a proč používám oba."
+date: "2026-03-10"
+tags: ["Claude", "ChatGPT", "srovnání", "GPT-5", "Anthropic", "OpenAI"]
+---
+
+Disclaimer: jsem Claude fan. Používám ho každý den, tento web jsem s ním postavil, a platím za Pro. Ale taky platím za ChatGPT Plus, protože oba mají své místo. Tady je upřímné srovnání bez marketingových keců.
+
+## Programování: Claude vyhrává
+
+Tohle není ani blízko. Claude — zvlášť přes Claude Code — je pro programování výrazně lepší.
+
+**Proč:**
+- Claude Code pracuje přímo s tvým repem. ChatGPT pracuje v izolovaném sandboxu.
+- Claude chápe kontext celého projektu. ChatGPT vidí to, co mu pošleš.
+- Claude píše idiomatický kód. ChatGPT občas míchá patterny z různých frameworků.
+- Claude respektuje tvůj coding style. ChatGPT má tendenci přepisovat všechno po svém.
+
+Příklad: dal jsem oběma stejný úkol — "přidej pagination do tohoto API endpointu" s kontextem existujícího kódu.
+
+Claude: přidal pagination konzistentně s existujícím stylem, správné typy, error handling.
+
+ChatGPT: funkčně správně, ale jiný coding style, chyběl error handling pro edge cases, přidal zbytečný komentář ke každému řádku.
+
+## Kreativní psaní: ChatGPT vyhrává
+
+Tady musím uznat — ChatGPT je kreativnější. Když potřebuji:
+- Brainstorming nápadů
+- Marketingové texty
+- Kreativní přeformulování
+- Storytelling
+
+GPT je přirozenější, méně "robotický," lépe zachytí tón. Claude je přesnější a faktičtější, ale někdy mu chybí ten kreativní "spark."
+
+## Analýza dokumentů: Claude vyhrává
+
+200k tokenů kontextu s excelentním retrievalem. Hodíš mu 50stránkový dokument a zeptáš se na detail ze strany 37 — najde to. GPT-5 má taky velký kontext, ale kvalita klesá s délkou.
+
+Testoval jsem na právním dokumentu (smlouva, 45 stran):
+- Claude: správně identifikoval klauzuli o penále na straně 38
+- ChatGPT: parafrázoval odpověď z jiné sekce, nebyl přesný
+
+## Multimodalita: ChatGPT vyhrává
+
+GPT-5 umí text, obrázky, audio a video. Claude umí text a obrázky. Pro:
+- Přepis audio meetingů → ChatGPT
+- Analýzu videa → ChatGPT
+- Generování obrázků → ChatGPT (DALL-E) nebo Gemini
+
+Claude na tomhle pracuje, ale zatím je GPT napřed.
+
+## Instrukce a přesnost: Claude vyhrává
+
+Řekneš Claudovi "odpověz v JSON formátu s přesně těmito klíči" — a dostaneš přesně to. GPT občas přidá extra pole, změní naming, nebo obalí odpověď do markdown code blocku, když jsi to nechtěl.
+
+Pro API a automatizaci je spolehlivost Claude klíčová. Moje skripty s Claude API fungují konzistentně, s GPT API občas potřebuji extra parsing.
+
+## Cena: srovnatelné
+
+| | Claude Pro | ChatGPT Plus |
+|---|---|---|
+| Měsíční | $20 | $20 |
+| API (mid-tier/1M input) | $3 (Sonnet) | ~$3 (GPT-5 mini) |
+| API (top-tier/1M input) | $15 (Opus) | ~$15 (GPT-5) |
+
+Skoro identické. Rozhoduje use case, ne cena.
+
+## Ekosystém: ChatGPT vyhrává (zatím)
+
+GPT Store, plugins, Custom GPTs — OpenAI má větší ekosystém. Ale MCP od Anthropic to pomalu mění. Claude Code + MCP servery začínají být mocnější než GPT Store, protože pracují s tvými lokálními daty.
+
+Za rok bych tipoval vyrovnání.
+
+## Můj reálný setup
+
+- **Claude Pro** — programování (Claude Code), code review, analýza dokumentů, API integrace
+- **ChatGPT Plus** — brainstorming, kreativní texty, audio přepisy, image generace
+- **Claude API (Sonnet)** — automatizované skripty, zákaznický chatbot
+- **GPT API (mini)** — klasifikace emailů, sumarizace
+
+Používám oba, protože nejsou vzájemně nahraditelné. Kdybych si musel vybrat jeden — Claude. Ale jsem rád, že nemusím.
+
+## Verdikt
+
+| Kategorie | Vítěz |
+|-----------|-------|
+| Programování | Claude |
+| Kreativní psaní | ChatGPT |
+| Analýza dokumentů | Claude |
+| Multimodalita | ChatGPT |
+| Instrukce/přesnost | Claude |
+| API spolehlivost | Claude |
+| Ekosystém | ChatGPT |
+| Cena | Remíza |
+| **Celkem** | **Claude 4:3** |
+
+Skóre je těsné a záleží na tvém use case. Pro vývojáře je Claude jasná volba. Pro kreativce a content tvůrce je ChatGPT silnější. Pro analytiky a "přesné" profese — Claude.
+
+A pro nadšence jako jsem já? Oba. Protože proč ne.

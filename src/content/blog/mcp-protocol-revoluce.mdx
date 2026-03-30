@@ -1,0 +1,105 @@
+---
+title: "MCP protokol: jak Anthropic tiše mění celý AI ekosystém"
+description: "Model Context Protocol je otevřený standard pro propojení AI s externími nástroji. Vysvětluji proč je to důležitější než si myslíte a jak ho už dneska používám."
+date: "2026-03-15"
+tags: ["MCP", "Anthropic", "protokol", "nástroje", "Claude Code"]
+---
+
+Když Anthropic oznámil Model Context Protocol (MCP), většina lidí to přehlédla. "Zase nějaký standard," řekli. Já jsem si to přečetl, zkusil, a teď tvrdím: **MCP je nejdůležitější věc, co Anthropic udělal po samotném Claudovi.**
+
+## Co je MCP?
+
+MCP je otevřený protokol, který definuje jak AI model komunikuje s externími nástroji a datovými zdroji. Představ si to jako USB pro AI — jeden standard, který funguje se vším.
+
+Před MCP: Každý AI nástroj měl vlastní způsob integrace. Pluginy v ChatGPT fungovaly jinak než tools v Claude, jinak než function calling v GPT API. Vývojáři psali integraci pro každou platformu zvlášť.
+
+Po MCP: Napíšeš MCP server jednou a funguje s Claude Code, Cursor, VS Code, a jakýmkoliv dalším klientem, který MCP podporuje.
+
+## Proč mě to nadchlo
+
+Používám Claude Code denně. A díky MCP můžu Claudovi dát přístup k:
+
+- **Databázi** — přímo se ptá na data, nemusím copy-pastovat SQL výsledky
+- **GitHub** — čte issues, vytváří PR, komentuje code review
+- **Figma** — vidí design a generuje kód, co odpovídá
+- **Sentry** — vidí error logy a pomáhá s debuggingem
+- **Vlastní API** — cokoliv, co obalím do MCP serveru
+
+Příklad — včera jsem debugoval production bug:
+
+```
+> claude "podívej se na Sentry, najdi poslední chybu
+  v /api/checkout a oprav ji"
+```
+
+Claude přes MCP přečetl Sentry log, identifikoval null pointer exception, našel příslušný soubor v mém repu, opravil bug a napsal test. Celé to trvalo 2 minuty.
+
+Bez MCP bych musel: otevřít Sentry → najít error → kopírovat stack trace → vložit do Claude → dostat řešení → ručně aplikovat. 15 minut místo 2.
+
+## Jak MCP funguje (jednoduše)
+
+MCP definuje tři koncepty:
+
+1. **Resources** — data, která AI může číst (soubory, databázové záznamy, API responses)
+2. **Tools** — akce, které AI může provést (vytvořit soubor, poslat request, spustit query)
+3. **Prompts** — předpřipravené instrukce pro specifické úlohy
+
+MCP server je jednoduchý program, který tyto tři věci vystavuje přes standardizované rozhraní. Klient (Claude Code, Cursor...) se připojí a ví co může používat.
+
+```typescript
+// Minimální MCP server pro přístup k databázi
+const server = new McpServer({
+  name: "my-db",
+  version: "1.0.0",
+});
+
+server.tool("query", { sql: z.string() }, async ({ sql }) => {
+  const result = await db.execute(sql);
+  return { content: [{ type: "text", text: JSON.stringify(result) }] };
+});
+```
+
+To je celé. 10 řádků a Claude má přístup k tvé databázi.
+
+## Proč je to důležitější než pluginy
+
+ChatGPT pluginy byly uzavřený ekosystém. OpenAI rozhodoval, co se dostane do store, a formát byl proprietární.
+
+MCP je:
+- **Otevřený** — MIT licence, kdokoliv může implementovat
+- **Standardizovaný** — jeden formát pro všechny klienty
+- **Lokální** — MCP server běží u tebe, tvá data nikam neodcházejí
+- **Composable** — můžeš připojit víc serverů najednou
+
+A nejlepší: MCP adoptují i ostatní. Cursor, VS Code Copilot, Windsurf — všichni přidávají MCP support. Anthropic vytvořil standard, který používá i konkurence. To je síla otevřeného přístupu.
+
+## Moje MCP setup
+
+Aktuálně mám v Claude Code připojené:
+
+| MCP Server | Co dělá |
+|-----------|---------|
+| GitHub | Issues, PR, code review |
+| PostgreSQL | Přímé query do dev databáze |
+| Filesystem | Rozšířený přístup k souborům mimo repo |
+| Vercel | Deploy status, logy, env variables |
+
+Setup je jednoduchý — přidáš servery do Claude Code konfigurace a je to. Žádné složité nastavování.
+
+## Co chybí?
+
+**Autorizace a bezpečnost.** MCP zatím nemá robustní auth model. Pro lokální použití OK, ale pro enterprise deploymenty to bude potřeba dořešit. Anthropic na tom pracuje — OAuth podpora už je v beta.
+
+**Discovery.** Neexistuje centrální registr MCP serverů. Hledáš na GitHubu a doufáš. Časem se to zlepší — ale teď je to trochu divoký západ.
+
+**Error handling.** Když MCP server spadne, Claude to někdy nezvládne gracefully. Zlepšuje se to s každou verzí, ale občas narazíš.
+
+## Proč bys měl MCP sledovat
+
+I když dneska nepoužíváš Claude Code, MCP mění pravidla hry:
+
+1. **AI asistenti** budou mít přístup ke tvým nástrojům — ne přes hacky, ale přes standard
+2. **Vývojáři nástrojů** budou psát jeden MCP server místo pěti integrací
+3. **Enterprise** bude moct bezpečně připojit AI k interním systémům
+
+Anthropic s MCP ukazuje, že nechce jen nejlepší model — chce definovat, jak AI komunikuje se světem. A zatím jim to vychází.

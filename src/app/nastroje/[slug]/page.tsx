@@ -60,7 +60,7 @@ export default async function ToolDetailPage({
   const { frontmatter, content } = tool
 
   return (
-    <article>
+    <article className="mx-auto max-w-5xl px-6 pt-24 pb-16">
       <header className="mb-10">
         <Link
           href="/nastroje"
@@ -83,21 +83,21 @@ export default async function ToolDetailPage({
       {/* Pros / Cons / Pricing */}
       <div className="mb-10 grid gap-4 sm:grid-cols-3">
         <div className="rounded-lg border border-border bg-card p-5">
-          <h3 className="mb-3 text-sm font-semibold text-green-400">Klady</h3>
+          <h3 className="mb-3 text-sm font-semibold text-green-600">Klady</h3>
           <ul className="space-y-1.5 text-sm text-muted">
             {frontmatter.pros.map((pro) => (
               <li key={pro} className="flex gap-2">
-                <span className="text-green-400">+</span> {pro}
+                <span className="text-green-600">+</span> {pro}
               </li>
             ))}
           </ul>
         </div>
         <div className="rounded-lg border border-border bg-card p-5">
-          <h3 className="mb-3 text-sm font-semibold text-red-400">Zápory</h3>
+          <h3 className="mb-3 text-sm font-semibold text-red-600">Zápory</h3>
           <ul className="space-y-1.5 text-sm text-muted">
             {frontmatter.cons.map((con) => (
               <li key={con} className="flex gap-2">
-                <span className="text-red-400">&minus;</span> {con}
+                <span className="text-red-600">&minus;</span> {con}
               </li>
             ))}
           </ul>
@@ -110,7 +110,7 @@ export default async function ToolDetailPage({
               href={frontmatter.affiliateUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-block rounded-md bg-accent px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent-hover"
+              className="mt-4 inline-block rounded-md bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
             >
               {frontmatter.affiliateLabel ?? 'Vyzkoušet'}
             </a>

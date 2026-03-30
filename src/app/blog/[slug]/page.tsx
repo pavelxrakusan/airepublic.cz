@@ -47,7 +47,7 @@ export default async function BlogPostPage({
   }
 
   return (
-    <article>
+    <article className="mx-auto max-w-5xl px-6 pt-24 pb-16">
       <header className="mb-10">
         <Link
           href="/blog"

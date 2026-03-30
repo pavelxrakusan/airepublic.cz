@@ -1,0 +1,84 @@
+---
+title: "Claude 4 je venku a je to skok: první dojmy po týdnu testování"
+description: "Anthropic vydal Claude 4 — novou generaci modelů. Opus 4 je brutální na kód, Sonnet 4 je rychlejší a levnější. Tady je co se změnilo a proč mě to nadchlo."
+date: "2026-03-20"
+tags: ["Claude 4", "Anthropic", "novinky", "recenze"]
+---
+
+Anthropic to udělal znovu. Claude 4 je venku a po týdnu intenzivního testování můžu říct: tohle je generační skok, ne inkrementální update.
+
+## Co je nového
+
+### Opus 4: ten chytrý kolega, co nikdy nespí
+
+Claude Opus 4 je nejmocnější model, co jsem kdy používal. A já jsem zkoušel všechno — GPT-5, Gemini 2 Pro, Llama 3, DeepSeek. Opus 4 je prostě jinde.
+
+Kde to vidím nejvíc:
+- **Kód.** Opus 4 chápe celé systémy, ne jen funkce. Řekneš mu "refaktoruj autentizaci" a on pochopí flow přes 15 souborů.
+- **Reasoning.** Extended thinking v Opus 4 je na jiné úrovni. Sledovat jak přemýšlí nad architektonickým problémem je jako číst myšlenky senior engineera.
+- **Kontext.** 200k tokenů, ale teď s ještě lepším retrievalem. Nechal jsem ho analyzovat celý monorepo (~150 souborů) a odpovídal přesně.
+
+### Sonnet 4: poměr výkon/cena, co dává smysl
+
+Sonnet 4 je to, co budeš používat 90 % času. Je rychlejší než Opus, levnější, a pro většinu úloh dostačující. Anthropic tady udělal skvělou práci — Sonnet 4 je lepší než Opus 3 v benchmarcích, za zlomek ceny.
+
+Moje pravidlo: Sonnet na všechno. Opus když potřebuju hluboký reasoning nebo pracuju s velkým kontextem.
+
+### Haiku 4.5: speed demon
+
+Haiku je pro real-time aplikace — chatboty, klasifikace, jednoduché extrakce. Latence pod 200ms. Pro většinu API use cases je Haiku víc než dost.
+
+## Můj test: reálný projekt
+
+Vzal jsem středně velký Next.js projekt (~80 souborů) a dal Opus 4 úkol: "Projdi celý projekt, najdi performance bottlenecky a navrhni řešení."
+
+**Výsledek:**
+1. Identifikoval N+1 query v Server Components (měl pravdu)
+2. Navrhl přesun dat do `use cache` komponenty s `cacheTag` (správný Next.js 15 pattern)
+3. Našel zbytečné re-rendery v klient komponentě (měl pravdu)
+4. Doporučil lazy loading pro těžkou knihovnu (správně)
+5. Jeden false positive — označil jako problém něco, co bylo záměrné
+
+Skóre: 4 z 5 validních nálezů. Za 30 sekund. Manuální review by mi trvalo hodinu.
+
+## Srovnání s GPT-5
+
+Musím být fér — GPT-5 je taky výborný model. Tady je moje upřímné srovnání:
+
+| Oblast | Claude Opus 4 | GPT-5 |
+|--------|--------------|-------|
+| Kód a architektura | Lepší | Velmi dobrý |
+| Dlouhý kontext | Výrazně lepší | Dobrý, ale klesá kvalita |
+| Kreativní psaní | Dobrý | Lepší |
+| Instrukce following | Excelentní | Velmi dobrý |
+| Multimodalita | Text + obrázky | Text + obrázky + audio + video |
+| Halucinace | Nejnižší | Nízké |
+| Cena (Sonnet vs GPT-5 mini) | Srovnatelná | Srovnatelná |
+
+**Můj verdikt:** Pro programování a analytické úlohy → Claude. Pro kreativní a multimodální úlohy → GPT. Pro cenový sweet spot → oba mají skvělé mid-tier modely.
+
+## Co mě překvapilo
+
+**Constitutional AI v4 je znát.** Claude 4 je méně "opatrný" než trojka. Anthropic očividně zapracoval na tom, aby model byl helpfull bez zbytečného gatekeepingu. Konečně mohu normálně diskutovat o security tématech.
+
+**Tool use je production-ready.** Strukturované volání funkcí je spolehlivé a konzistentní. Builduju s tím API endpoint, co parsuje dokumenty, a funguje to parádně.
+
+**Čeština je překvapivě dobrá.** Claude 4 v češtině generuje přirozenější text než trojka. Méně anglicismů, lepší skloňování. Stále ne perfektní, ale posun je vidět.
+
+## Cena
+
+| Model | Input (1M tokenů) | Output (1M tokenů) |
+|-------|-------------------|---------------------|
+| Opus 4 | $15 | $75 |
+| Sonnet 4 | $3 | $15 |
+| Haiku 4.5 | $0.25 | $1.25 |
+
+Opus je drahý, ale na to, co umí, to stojí za to. Sonnet pokrývá 90 % potřeb za rozumnou cenu.
+
+## Závěr
+
+Claude 4 potvrzuje, že Anthropic myslí vážně. Nejsou to jen "ti bezpečnostní guys" — dělají top-tier modely, které reálně používám každý den.
+
+Jestli jsi na Claude 3 — upgradni. Jestli jsi na GPT — zkus Sonnet 4 na týden. Minimálně budeš mít srovnání.
+
+A jestli jsi nikdy AI nepoužíval... no, lepší čas začít nebude.

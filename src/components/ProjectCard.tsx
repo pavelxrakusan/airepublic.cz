@@ -2,14 +2,14 @@ import { getStatusLabel } from '@/lib/mdx'
 import type { Project, ContentItem } from '@/lib/types'
 
 const statusColors: Record<string, string> = {
-  hotovo: 'border-green-800 text-green-400',
-  rozpracovano: 'border-yellow-800 text-yellow-400',
-  planovano: 'border-border text-muted',
+  hotovo: 'border-green-200 bg-green-50 text-green-700',
+  rozpracovano: 'border-amber-200 bg-amber-50 text-amber-700',
+  planovano: 'border-border bg-white text-muted',
 }
 
 export function ProjectCard({ project }: { project: ContentItem<Project> }) {
   return (
-    <div className="group rounded-lg border border-border bg-card p-6 transition-all hover:border-border-hover">
+    <div className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:border-border-hover hover:shadow-md">
       <div className="mb-3 flex items-center justify-between">
         <span
           className={`rounded-full border px-2.5 py-0.5 text-xs ${
@@ -29,7 +29,7 @@ export function ProjectCard({ project }: { project: ContentItem<Project> }) {
         {project.frontmatter.techStack.map((tech) => (
           <span
             key={tech}
-            className="rounded-full border border-border px-2.5 py-0.5 font-mono text-xs text-muted"
+            className="rounded-full border border-border bg-white px-2.5 py-0.5 font-mono text-xs text-muted"
           >
             {tech}
           </span>

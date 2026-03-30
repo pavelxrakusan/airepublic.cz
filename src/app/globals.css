@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0a0a0a;
-  --color-foreground: #ffffff;
-  --color-muted: #a1a1aa;
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  --color-muted: #64748b;
   --color-accent: #7c3aed;
-  --color-accent-hover: #8b5cf6;
-  --color-card: #141414;
-  --color-border: #262626;
-  --color-border-hover: #404040;
+  --color-accent-hover: #6d28d9;
+  --color-card: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-border-hover: #cbd5e1;
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
@@ -63,7 +63,7 @@ body {
 
 .prose code {
   font-family: var(--font-mono);
-  background-color: var(--color-card);
+  background-color: #f1f5f9;
   border: 1px solid var(--color-border);
   border-radius: 4px;
   padding: 0.15em 0.4em;
@@ -71,8 +71,9 @@ body {
 }
 
 .prose pre {
-  background-color: var(--color-card);
-  border: 1px solid var(--color-border);
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
   border-radius: 8px;
   padding: 1.25em;
   overflow-x: auto;
@@ -84,6 +85,7 @@ body {
   border: none;
   padding: 0;
   font-size: 0.875em;
+  color: inherit;
 }
 
 .prose ul,
