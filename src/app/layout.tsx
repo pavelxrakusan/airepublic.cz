@@ -1,0 +1,33 @@
+import type { Metadata } from 'next'
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
+import { Navigation } from '@/components/Navigation'
+import { Footer } from '@/components/Footer'
+import './globals.css'
+
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://airepublic.cz'),
+  title: {
+    default: 'AIRepublic.cz — Průvodce světem umělé inteligence',
+    template: '%s | AIRepublic.cz',
+  },
+  description:
+    'Český AI portál — recenze nástrojů, návody, novinky a vibe coding projekty ze světa umělé inteligence.',
+  openGraph: {
+    type: 'website',
+    locale: 'cs_CZ',
+    siteName: 'AIRepublic.cz',
+  },
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="cs" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+      <body className="min-h-screen bg-background font-sans text-foreground antialiased">
+        <Navigation />
+        <main className="mx-auto max-w-5xl px-6 pt-24 pb-16">{children}</main>
+        <Footer />
+      </body>
+    </html>
+  )
+}

@@ -1,0 +1,41 @@
+import Link from 'next/link'
+import type { BlogPost, ContentItem } from '@/lib/types'
+
+export function ArticleCard({ post }: { post: ContentItem<BlogPost> }) {
+  return (
+    <Link
+      href={`/blog/${post.slug}`}
+      className="group block rounded-lg border border-border bg-card p-6 transition-all hover:border-border-hover"
+    >
+      <div className="mb-3 flex items-center gap-3 text-xs text-muted">
+        <time dateTime={post.frontmatter.date}>
+          {new Date(post.frontmatter.date).toLocaleDateString('cs-CZ', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })}
+        </time>
+        <span>&middot;</span>
+        <span>{post.readingTime.text}</span>
+      </div>
+      <h3 className="mb-2 text-lg font-semibold tracking-tight text-foreground transition-colors group-hover:text-accent">
+        {post.frontmatter.title}
+      </h3>
+      <p className="text-sm leading-relaxed text-muted">
+        {post.frontmatter.description}
+      </p>
+      {post.frontmatter.tags.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {post.frontmatter.tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </Link>
+  )
+}
