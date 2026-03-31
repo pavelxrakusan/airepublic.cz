@@ -21,14 +21,9 @@ export default function HomePage() {
           <HeroParticles />
         </div>
 
-        {/* Mobile hero: mascot is the star */}
-        <div className="flex flex-col items-center gap-4 px-6 pt-20 sm:hidden">
-          <PixelMascot scale={10} />
-          <h1
-            className="mt-2 bg-gradient-to-r from-[#11457E] via-[#999] to-[#D7141A] bg-clip-text text-center text-3xl font-black tracking-tight text-transparent"
-          >
-            airepublic.cz
-          </h1>
+        {/* Mobile hero: just the mascot, living its life */}
+        <div className="flex flex-col items-center px-6 pt-16 sm:hidden">
+          <PixelMascot scale={12} />
         </div>
 
         {/* Desktop content layer (below particle text) */}
