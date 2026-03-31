@@ -36,11 +36,26 @@ export default function AboutPage() {
           naplňuje. A&nbsp;po večerech? Po večerech stavím věci s&nbsp;AI.
         </p>
 
-        <h2>Jak jsem se dostal k AI</h2>
+        <h2>Weby stavím od roku 2000</h2>
         <p>
-          Dřív jsem na weby a&nbsp;technické věci najímal programátory. Pak přišel
-          Claude. Zkusil jsem free tier, hitl limit za hodinu, koupil Pro a&nbsp;najednou
-          jsem stavěl věci sám — bez frameworků, bez závislostí na externistech.
+          Tohle není příběh o&nbsp;tom, jak jsem poprvé uviděl kód. Weby dělám
+          přes 25 let — HTML, CSS, základy PHP, MySQL, hromada WordPressů,
+          Wix, custom řešení. Navrhoval jsem design a&nbsp;architekturu, na
+          složitější backend jsem spolupracoval s&nbsp;programátory nebo je
+          najímal. Tak to fungovalo roky: já dělám koncept, UX a&nbsp;vizuál,
+          profík kóduje.
+        </p>
+
+        <h2>Pak přišel Claude</h2>
+        <p>
+          A&nbsp;najednou ten "profík na backend" sedí v&nbsp;mém terminálu.
+          Zkusil jsem free tier, hitl limit za hodinu, koupil Pro a&nbsp;zjistil,
+          že věci, na které jsem dřív potřeboval externisty, zvládnu sám. Ne proto,
+          že bych se přes noc naučil programovat — ale proto, že Claude rozumí
+          tomu, co chci, a&nbsp;já rozumím tomu, co mi vrátí. 25 let zkušeností
+          s&nbsp;weby + AI = jiná liga.
+        </p>
+        <p>
           Celý příběh jsem sepsal v&nbsp;článku{' '}
           <a href="/blog/od-free-tieru-po-zavislost">Od free tieru po závislost</a>.
         </p>
