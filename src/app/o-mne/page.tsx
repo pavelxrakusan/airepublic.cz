@@ -79,6 +79,12 @@ export default function AboutPage() {
             <a href="/blog/carfast-architektura">Technický rozbor tady</a>.
           </li>
           <li>
+            <strong>LeadForge.cz</strong> — lead-gen systém pro SVJ trh. Python
+            pipeline, 17 665 SVJ z&nbsp;Prahy a&nbsp;Středočeského kraje, AI asistent,
+            Next.js portál.{' '}
+            <a href="/blog/leadforge-architektura">Jak to funguje</a>.
+          </li>
+          <li>
             A&nbsp;další projekty, které přibývají rychleji, než stíhám psát články.
           </li>
         </ul>
