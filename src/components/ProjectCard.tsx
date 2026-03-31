@@ -17,7 +17,7 @@ export function ProjectCard({ project }: { project: ContentItem<Project> }) {
             src={project.frontmatter.image}
             alt={project.frontmatter.title}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover object-top transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         </div>
