@@ -1,4 +1,4 @@
-import { list, put } from '@vercel/blob'
+import { get, list, put } from '@vercel/blob'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface ScoreEntry {
@@ -16,12 +16,13 @@ async function readScores(): Promise<ScoreEntry[]> {
     const { blobs } = await list({ prefix: BLOB_KEY })
     if (blobs.length === 0) return []
 
-    // For private stores, blobs[0].downloadUrl has a token-signed URL
-    const url = blobs[0].downloadUrl ?? blobs[0].url
-    const res = await fetch(url)
-    if (!res.ok) return []
-
-    const data = await res.json()
+    const result = await get(blobs[0].url, { access: 'private' })
+    const chunks: Uint8Array[] = []
+    for await (const chunk of result.stream) {
+      chunks.push(chunk as Uint8Array)
+    }
+    const text = Buffer.concat(chunks).toString()
+    const data = JSON.parse(text)
     return Array.isArray(data) ? data : []
   } catch {
     return []

@@ -18,10 +18,13 @@ export default function SnakeLeaderboard() {
         .then((data) => setScores(data))
         .catch(() => setScores([]));
 
+    // Delay refetch slightly so Blob has time to propagate the write
+    const handleScoreUpdated = () => setTimeout(loadScores, 500);
+
     loadScores();
 
-    window.addEventListener('snake-score-updated', loadScores);
-    return () => window.removeEventListener('snake-score-updated', loadScores);
+    window.addEventListener('snake-score-updated', handleScoreUpdated);
+    return () => window.removeEventListener('snake-score-updated', handleScoreUpdated);
   }, []);
 
   if (scores === null) {
