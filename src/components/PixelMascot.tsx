@@ -3,268 +3,430 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 /*
- * Tamagotchi-style pixel art mascot.
- * Auto-cycles through behaviors + reacts to taps.
- * Scales via `size` prop (pixel multiplier).
+ * Tamagotchi-style pixel mascot with agent behaviors.
+ * Solo animations + multi-agent scenes (spawn, chat, handoff, highfive).
  */
 
 const B = '#C0613A'
 const D = '#3A2520'
 const L = '#A34E2E'
-const H = '#E8453A' // heart red
+const H = '#E8453A'
+const W = '#94a3b8' // speech bubble gray
+const G = '#22c55e' // green (code/matrix)
+const P = '#7c3aed' // purple accent
 const _ = ''
 
 type Grid = string[][]
-type Behavior =
-  | 'idle' | 'wave' | 'look' | 'jump' | 'type'
-  | 'sleep' | 'dance' | 'happy' | 'love' | 'spin'
 
 /* ═══════════════════════════════════════════════════════
-   PIXEL GRIDS (13 cols × 9 rows)
+   PIXEL GRIDS — solo (13×9)
    ═══════════════════════════════════════════════════════ */
 
 const IDLE: Grid = [
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
-  [_, _, _, B, B, B, B, B, B, B, _, _, _],
-  [_, _, B, B, D, B, B, B, D, B, B, _, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,B,B,B,B,B,B,B,_,_,_],
+  [_,_,B,B,D,B,B,B,D,B,B,_,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
 ]
 
 const BLINK: Grid = [
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
-  [_, _, _, B, B, B, B, B, B, B, _, _, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, _, B, B, L, B, B, B, L, B, B, _, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,B,B,B,B,B,B,B,_,_,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,B,B,L,B,B,B,L,B,B,_,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
 ]
 
 const WAVE_UP: Grid = [
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
-  [_, _, _, B, B, B, B, B, B, B, _, _, B],
-  [_, _, B, B, D, B, B, B, D, B, B, _, B],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,B,B,B,B,B,B,B,_,_,B],
+  [_,_,B,B,D,B,B,B,D,B,B,_,B],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
 ]
 
 const WAVE_DOWN: Grid = [
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
-  [_, _, _, B, B, B, B, B, B, B, _, _, _],
-  [_, _, B, B, D, B, B, B, D, B, B, _, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, B],
-  [_, B, B, B, B, B, B, B, B, B, B, B, B],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,B,B,B,B,B,B,B,_,_,_],
+  [_,_,B,B,D,B,B,B,D,B,B,_,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,B],
+  [_,B,B,B,B,B,B,B,B,B,B,B,B],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
 ]
 
 const LOOK_LEFT: Grid = [
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
-  [_, _, _, B, B, B, B, B, B, B, _, _, _],
-  [_, _, B, D, B, B, B, D, B, B, B, _, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,B,B,B,B,B,B,B,_,_,_],
+  [_,_,B,D,B,B,B,D,B,B,B,_,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
 ]
 
 const LOOK_RIGHT: Grid = [
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
-  [_, _, _, B, B, B, B, B, B, B, _, _, _],
-  [_, _, B, B, B, D, B, B, B, D, B, _, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,B,B,B,B,B,B,B,_,_,_],
+  [_,_,B,B,B,D,B,B,B,D,B,_,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
 ]
 
 const JUMP_CROUCH: Grid = [
-  [_, _, _, _, _, _, _, _, _, _, _, _, _],
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
-  [_, _, _, B, B, B, B, B, B, B, _, _, _],
-  [_, _, B, B, D, B, B, B, D, B, B, _, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, B, B, B, _, B, _, B, _, B, B, B, _],
+  [_,_,_,_,_,_,_,_,_,_,_,_,_],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,B,B,B,B,B,B,B,_,_,_],
+  [_,_,B,B,D,B,B,B,D,B,B,_,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,B,B,B,_,B,_,B,_,B,B,B,_],
 ]
 
 const TYPE_L: Grid = [
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
-  [_, _, _, B, B, B, B, B, B, B, _, _, _],
-  [_, _, B, B, D, B, B, B, D, B, B, _, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, _, _, B, _, _, _, _, _, B, _, _, _],
-  [_, _, _, B, _, _, _, _, _, B, _, _, _],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,B,B,B,B,B,B,B,_,_,_],
+  [_,_,B,B,D,B,B,B,D,B,B,_,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,_,B,_,_,_,_,_,B,_,_,_],
+  [_,_,_,B,_,_,_,_,_,B,_,_,_],
 ]
 
 const TYPE_R: Grid = [
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
-  [_, _, _, B, B, B, B, B, B, B, _, _, _],
-  [_, _, B, B, D, B, B, B, D, B, B, _, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,B,B,B,B,B,B,B,_,_,_],
+  [_,_,B,B,D,B,B,B,D,B,B,_,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
 ]
 
-// Happy face (^ ^ eyes)
 const HAPPY: Grid = [
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
-  [_, _, _, B, B, B, B, B, B, B, _, _, _],
-  [_, _, B, D, B, D, B, D, B, D, B, _, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,B,B,B,B,B,B,B,_,_,_],
+  [_,_,B,D,B,D,B,D,B,D,B,_,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
 ]
 
-// Sleep (eyes closed, mouth line)
 const SLEEP: Grid = [
-  [_, _, _, _, B, _, _, _, B, _, _, _, _],
-  [_, _, _, B, B, B, B, B, B, B, _, _, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, _, B, L, L, B, B, L, L, B, B, _, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, B, B, B, B, B, B, B, B, B, B, B, _],
-  [_, _, B, B, B, B, B, B, B, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
-  [_, _, B, B, _, B, _, B, _, B, B, _, _],
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,B,B,B,B,B,B,B,_,_,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,B,L,L,B,B,L,L,B,B,_,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
 ]
 
-// Dance left (body shifted)
 const DANCE_L: Grid = [
-  [_, _, _, B, _, _, _, B, _, _, _, _, _],
-  [_, _, B, B, B, B, B, B, B, _, _, _, _],
-  [_, B, B, D, B, B, B, D, B, B, _, _, _],
-  [_, B, B, B, B, B, B, B, B, B, _, _, _],
-  [B, B, B, B, B, B, B, B, B, B, B, _, _],
-  [B, B, B, B, B, B, B, B, B, B, B, _, _],
-  [_, B, B, B, B, B, B, B, B, B, _, _, _],
-  [_, B, B, _, B, _, B, _, B, B, _, _, _],
-  [_, B, B, _, B, _, B, _, B, B, _, _, _],
+  [_,_,_,B,_,_,_,B,_,_,_,_,_],
+  [_,_,B,B,B,B,B,B,B,_,_,_,_],
+  [_,B,B,D,B,B,B,D,B,B,_,_,_],
+  [_,B,B,B,B,B,B,B,B,B,_,_,_],
+  [B,B,B,B,B,B,B,B,B,B,B,_,_],
+  [B,B,B,B,B,B,B,B,B,B,B,_,_],
+  [_,B,B,B,B,B,B,B,B,B,_,_,_],
+  [_,B,B,_,B,_,B,_,B,B,_,_,_],
+  [_,B,B,_,B,_,B,_,B,B,_,_,_],
 ]
 
 const DANCE_R: Grid = [
-  [_, _, _, _, _, B, _, _, _, B, _, _, _],
-  [_, _, _, _, B, B, B, B, B, B, B, _, _],
-  [_, _, _, B, B, D, B, B, B, D, B, B, _],
-  [_, _, _, B, B, B, B, B, B, B, B, B, _],
-  [_, _, B, B, B, B, B, B, B, B, B, B, B],
-  [_, _, B, B, B, B, B, B, B, B, B, B, B],
-  [_, _, _, B, B, B, B, B, B, B, B, B, _],
-  [_, _, _, B, B, _, B, _, B, _, B, B, _],
-  [_, _, _, B, B, _, B, _, B, _, B, B, _],
+  [_,_,_,_,_,B,_,_,_,B,_,_,_],
+  [_,_,_,_,B,B,B,B,B,B,B,_,_],
+  [_,_,_,B,B,D,B,B,B,D,B,B,_],
+  [_,_,_,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,B,B],
+  [_,_,B,B,B,B,B,B,B,B,B,B,B],
+  [_,_,_,B,B,B,B,B,B,B,B,B,_],
+  [_,_,_,B,B,_,B,_,B,_,B,B,_],
+  [_,_,_,B,B,_,B,_,B,_,B,B,_],
 ]
 
-// Love (same as happy, heart rendered separately)
-const LOVE: Grid = HAPPY
+// Thinking face (eyes up)
+const THINK: Grid = [
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],
+  [_,_,_,B,B,B,B,B,B,B,_,_,_],
+  [_,_,B,B,D,B,B,B,D,B,B,_,_],
+  [_,_,B,D,B,B,B,D,B,B,B,_,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,B,B,B,B,B,B,B,B,B,B,B,_],
+  [_,_,B,B,B,B,B,B,B,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
+  [_,_,B,B,_,B,_,B,_,B,B,_,_],
+]
 
-/* ── Laptop (9×3) ─────────────────────────────────────── */
+/* ── Small accessories ────────────────────────────────── */
+
 const LAPTOP: Grid = [
-  [_, _, L, L, L, L, L, _, _],
-  [_, L, L, L, L, L, L, L, _],
-  [L, L, L, L, L, L, L, L, L],
+  [_,_,L,L,L,L,L,_,_],
+  [_,L,L,L,L,L,L,L,_],
+  [L,L,L,L,L,L,L,L,L],
 ]
 
-/* ── Heart (5×5) ──────────────────────────────────────── */
 const HEART: Grid = [
-  [_, H, _, H, _],
-  [H, H, H, H, H],
-  [H, H, H, H, H],
-  [_, H, H, H, _],
-  [_, _, H, _, _],
+  [_,H,_,H,_],
+  [H,H,H,H,H],
+  [H,H,H,H,H],
+  [_,H,H,H,_],
+  [_,_,H,_,_],
 ]
 
-/* ── Zzz letters ──────────────────────────────────────── */
 const ZZZ: Grid = [
-  [D, D, D],
-  [_, _, D],
-  [_, D, _],
-  [D, _, _],
-  [D, D, D],
+  [D,D,D],
+  [_,_,D],
+  [_,D,_],
+  [D,_,_],
+  [D,D,D],
 ]
+
+const SPEECH: Grid = [
+  [_,W,W,W,W,_],
+  [W,W,W,W,W,W],
+  [W,W,W,W,W,W],
+  [_,W,W,W,_,_],
+  [_,W,_,_,_,_],
+]
+
+const THOUGHT: Grid = [
+  [_,W,W,W,W,_],
+  [W,D,W,D,W,W],
+  [W,W,W,W,W,W],
+  [_,_,W,W,_,_],
+  [_,_,_,W,_,_],
+]
+
+const DOC: Grid = [
+  [W,W,W,W],
+  [W,P,P,W],
+  [W,P,P,W],
+  [W,P,P,W],
+  [W,W,W,W],
+]
+
+const SPARKLE: Grid = [
+  [_,P,_],
+  [P,P,P],
+  [_,P,_],
+]
+
+/* ── Mirror helper (for buddy facing opposite direction) ── */
+function mirror(grid: Grid): Grid {
+  return grid.map(row => [...row].reverse())
+}
 
 /* ═══════════════════════════════════════════════════════
-   BEHAVIOR DEFINITIONS
+   SCENE FRAME — defines what to render each tick
    ═══════════════════════════════════════════════════════ */
+
+interface SceneFrame {
+  main: Grid
+  buddy?: Grid
+  accessory?: { grid: Grid; position: 'above' | 'above-right' | 'between-top' | 'between-mid' }
+  laptop?: boolean
+}
 
 interface BehaviorDef {
-  frames: Grid[]
+  scenes: SceneFrame[]
   frameMs: number
   durationMs: number
-  showLaptop?: boolean
   jumpAnimation?: boolean
-  overlay?: 'heart' | 'zzz'
 }
-
-const BEHAVIOR_DEFS: Record<Behavior, BehaviorDef> = {
-  idle:  { frames: [IDLE], frameMs: 1000, durationMs: 3500 },
-  wave:  { frames: [WAVE_UP, WAVE_DOWN, WAVE_UP, WAVE_DOWN, WAVE_UP, IDLE], frameMs: 300, durationMs: 1800 },
-  look:  { frames: [LOOK_LEFT, LOOK_LEFT, IDLE, LOOK_RIGHT, LOOK_RIGHT, IDLE], frameMs: 400, durationMs: 2400 },
-  jump:  { frames: [JUMP_CROUCH, IDLE, IDLE, JUMP_CROUCH], frameMs: 250, durationMs: 1000, jumpAnimation: true },
-  type:  { frames: [TYPE_L, TYPE_R, TYPE_L, TYPE_R, TYPE_L, TYPE_R, TYPE_L, TYPE_R], frameMs: 200, durationMs: 1600, showLaptop: true },
-  sleep: { frames: [SLEEP, BLINK, SLEEP, SLEEP], frameMs: 800, durationMs: 3200, overlay: 'zzz' },
-  dance: { frames: [DANCE_L, DANCE_R, DANCE_L, DANCE_R, DANCE_L, DANCE_R], frameMs: 250, durationMs: 1500 },
-  happy: { frames: [HAPPY, IDLE, HAPPY, IDLE, HAPPY], frameMs: 300, durationMs: 1500 },
-  love:  { frames: [LOVE], frameMs: 500, durationMs: 1500, overlay: 'heart' },
-  spin:  { frames: [IDLE, LOOK_LEFT, IDLE, LOOK_RIGHT], frameMs: 150, durationMs: 600 },
-}
-
-const AUTO_SEQUENCE: Behavior[] = [
-  'idle', 'wave', 'idle', 'look', 'idle', 'type',
-  'idle', 'sleep', 'idle', 'dance', 'idle', 'jump',
-]
-
-const TAP_REACTIONS: Behavior[] = ['happy', 'love', 'jump', 'dance', 'wave', 'spin']
 
 /* ═══════════════════════════════════════════════════════
-   RENDER HELPERS
+   BEHAVIORS
    ═══════════════════════════════════════════════════════ */
 
-function PixelGrid({ grid, px, className = '' }: { grid: Grid; px: number; className?: string }) {
+type Behavior =
+  | 'idle' | 'wave' | 'look' | 'jump' | 'type'
+  | 'sleep' | 'dance' | 'happy' | 'love' | 'spin'
+  | 'think' | 'spawn' | 'chat' | 'handoff' | 'highfive' | 'celebrate'
+
+// Buddy spawn: pixels gradually appear
+function makeSpawnFrames(): SceneFrame[] {
+  const buddy = mirror(IDLE)
+  const rows = buddy.length
+  const cols = buddy[0].length
+  const stages = [0.15, 0.4, 0.7, 1.0]
+
+  // Deterministic "random" reveal order
+  const allPixels: [number, number][] = []
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (buddy[r][c]) allPixels.push([r, c])
+    }
+  }
+  // Shuffle with fixed seed
+  for (let i = allPixels.length - 1; i > 0; i--) {
+    const j = (i * 7 + 3) % (i + 1)
+    ;[allPixels[i], allPixels[j]] = [allPixels[j], allPixels[i]]
+  }
+
+  return [
+    { main: IDLE },
+    { main: IDLE, accessory: { grid: SPARKLE, position: 'between-mid' } },
+    ...stages.map((pct): SceneFrame => {
+      const count = Math.floor(allPixels.length * pct)
+      const partial: Grid = buddy.map(row => row.map(() => _))
+      for (let i = 0; i < count; i++) {
+        const [r, c] = allPixels[i]
+        partial[r][c] = buddy[r][c]
+      }
+      return { main: IDLE, buddy: partial }
+    }),
+    { main: HAPPY, buddy: mirror(HAPPY) },
+    { main: HAPPY, buddy: mirror(HAPPY) },
+  ]
+}
+
+const DEFS: Record<Behavior, BehaviorDef> = {
+  idle:   { scenes: [{ main: IDLE }], frameMs: 1000, durationMs: 3000 },
+  wave:   { scenes: [
+    { main: WAVE_UP }, { main: WAVE_DOWN }, { main: WAVE_UP },
+    { main: WAVE_DOWN }, { main: WAVE_UP }, { main: IDLE },
+  ], frameMs: 300, durationMs: 1800 },
+  look:   { scenes: [
+    { main: LOOK_LEFT }, { main: LOOK_LEFT }, { main: IDLE },
+    { main: LOOK_RIGHT }, { main: LOOK_RIGHT }, { main: IDLE },
+  ], frameMs: 400, durationMs: 2400 },
+  jump:   { scenes: [
+    { main: JUMP_CROUCH }, { main: IDLE }, { main: IDLE }, { main: JUMP_CROUCH },
+  ], frameMs: 250, durationMs: 1000, jumpAnimation: true },
+  type:   { scenes: [
+    { main: TYPE_L, laptop: true }, { main: TYPE_R, laptop: true },
+    { main: TYPE_L, laptop: true }, { main: TYPE_R, laptop: true },
+    { main: TYPE_L, laptop: true }, { main: TYPE_R, laptop: true },
+    { main: TYPE_L, laptop: true }, { main: TYPE_R, laptop: true },
+  ], frameMs: 200, durationMs: 1600 },
+  sleep:  { scenes: [
+    { main: SLEEP, accessory: { grid: ZZZ, position: 'above-right' } },
+    { main: BLINK }, { main: SLEEP, accessory: { grid: ZZZ, position: 'above-right' } },
+    { main: SLEEP, accessory: { grid: ZZZ, position: 'above-right' } },
+  ], frameMs: 800, durationMs: 3200 },
+  dance:  { scenes: [
+    { main: DANCE_L }, { main: DANCE_R }, { main: DANCE_L },
+    { main: DANCE_R }, { main: DANCE_L }, { main: DANCE_R },
+  ], frameMs: 250, durationMs: 1500 },
+  happy:  { scenes: [
+    { main: HAPPY }, { main: IDLE }, { main: HAPPY }, { main: IDLE }, { main: HAPPY },
+  ], frameMs: 300, durationMs: 1500 },
+  love:   { scenes: [
+    { main: HAPPY, accessory: { grid: HEART, position: 'above' } },
+  ], frameMs: 500, durationMs: 1500 },
+  spin:   { scenes: [
+    { main: IDLE }, { main: LOOK_LEFT }, { main: IDLE }, { main: LOOK_RIGHT },
+  ], frameMs: 150, durationMs: 600 },
+  think:  { scenes: [
+    { main: THINK, accessory: { grid: THOUGHT, position: 'above-right' } },
+    { main: THINK },
+    { main: THINK, accessory: { grid: THOUGHT, position: 'above-right' } },
+    { main: LOOK_RIGHT },
+    { main: THINK, accessory: { grid: THOUGHT, position: 'above-right' } },
+    { main: HAPPY },
+  ], frameMs: 500, durationMs: 3000 },
+
+  // ── Multi-agent scenes ──
+  spawn: { scenes: makeSpawnFrames(), frameMs: 350, durationMs: 2800 },
+  chat: { scenes: [
+    { main: LOOK_RIGHT, buddy: mirror(LOOK_LEFT), accessory: { grid: SPEECH, position: 'above' } },
+    { main: LOOK_RIGHT, buddy: mirror(LOOK_LEFT) },
+    { main: IDLE, buddy: mirror(IDLE), accessory: { grid: SPEECH, position: 'between-top' } },
+    { main: IDLE, buddy: mirror(IDLE) },
+    { main: LOOK_RIGHT, buddy: mirror(LOOK_LEFT), accessory: { grid: SPEECH, position: 'above' } },
+    { main: IDLE, buddy: mirror(HAPPY) },
+  ], frameMs: 450, durationMs: 2700 },
+  handoff: { scenes: [
+    { main: LOOK_RIGHT, buddy: mirror(IDLE), accessory: { grid: DOC, position: 'above' } },
+    { main: LOOK_RIGHT, buddy: mirror(IDLE), accessory: { grid: DOC, position: 'between-top' } },
+    { main: LOOK_RIGHT, buddy: mirror(IDLE), accessory: { grid: DOC, position: 'between-mid' } },
+    { main: IDLE, buddy: mirror(LOOK_LEFT), accessory: { grid: DOC, position: 'between-top' } },
+    { main: IDLE, buddy: mirror(HAPPY) },
+  ], frameMs: 400, durationMs: 2000 },
+  highfive: { scenes: [
+    { main: IDLE, buddy: mirror(IDLE) },
+    { main: WAVE_DOWN, buddy: mirror(WAVE_DOWN) },
+    { main: WAVE_UP, buddy: mirror(WAVE_UP), accessory: { grid: SPARKLE, position: 'between-top' } },
+    { main: WAVE_UP, buddy: mirror(WAVE_UP), accessory: { grid: SPARKLE, position: 'between-top' } },
+    { main: HAPPY, buddy: mirror(HAPPY) },
+  ], frameMs: 350, durationMs: 1750 },
+  celebrate: { scenes: [
+    { main: HAPPY, buddy: mirror(HAPPY), accessory: { grid: SPARKLE, position: 'above' } },
+    { main: DANCE_L, buddy: mirror(DANCE_R) },
+    { main: DANCE_R, buddy: mirror(DANCE_L), accessory: { grid: HEART, position: 'between-top' } },
+    { main: DANCE_L, buddy: mirror(DANCE_R) },
+    { main: HAPPY, buddy: mirror(HAPPY), accessory: { grid: SPARKLE, position: 'above' } },
+    { main: IDLE, buddy: mirror(IDLE) },
+  ], frameMs: 300, durationMs: 1800 },
+}
+
+const AUTO_SEQ: Behavior[] = [
+  'idle', 'wave', 'idle', 'look', 'idle', 'type',
+  'idle', 'think', 'idle', 'spawn',
+  'idle', 'chat', 'idle', 'dance',
+  'idle', 'handoff', 'idle', 'sleep',
+  'idle', 'highfive', 'idle', 'jump',
+  'idle', 'celebrate',
+]
+
+const TAP_REACTIONS: Behavior[] = [
+  'happy', 'love', 'jump', 'dance', 'wave', 'spin',
+  'spawn', 'highfive', 'celebrate',
+]
+
+/* ═══════════════════════════════════════════════════════
+   RENDER
+   ═══════════════════════════════════════════════════════ */
+
+function PGrid({ grid, px, className = '' }: { grid: Grid; px: number; className?: string }) {
   const cols = grid[0].length
   const rows = grid.length
   return (
     <svg
-      width={cols * px}
-      height={rows * px}
+      width={cols * px} height={rows * px}
       viewBox={`0 0 ${cols * px} ${rows * px}`}
       className={`block ${className}`}
       style={{ imageRendering: 'pixelated' }}
       aria-hidden="true"
     >
       {grid.flatMap((row, ry) =>
-        row.map((color, cx) =>
-          color ? (
-            <rect key={`${ry}-${cx}`} x={cx * px} y={ry * px} width={px} height={px} fill={color} />
-          ) : null,
-        ),
+        row.map((c, cx) => c ? (
+          <rect key={`${ry}-${cx}`} x={cx * px} y={ry * px} width={px} height={px} fill={c} />
+        ) : null)
       )}
     </svg>
   )
@@ -274,137 +436,109 @@ function PixelGrid({ grid, px, className = '' }: { grid: Grid; px: number; class
    COMPONENT
    ═══════════════════════════════════════════════════════ */
 
-interface Props {
-  /** Pixel size multiplier. Default 6 (desktop), use 10+ for mobile hero. */
-  scale?: number
-  className?: string
-}
+interface Props { scale?: number; className?: string }
 
 export function PixelMascot({ scale = 6, className = '' }: Props) {
   const [autoIdx, setAutoIdx] = useState(0)
-  const [tapBehavior, setTapBehavior] = useState<Behavior | null>(null)
-  const [frameIdx, setFrameIdx] = useState(0)
-  const [isBlinking, setIsBlinking] = useState(false)
+  const [tap, setTap] = useState<Behavior | null>(null)
+  const [fi, setFi] = useState(0)
+  const [blinking, setBlinking] = useState(false)
   const [jumpY, setJumpY] = useState(0)
   const [spinDeg, setSpinDeg] = useState(0)
-  const frameTimer = useRef<ReturnType<typeof setInterval>>(null)
-  const behaviorTimer = useRef<ReturnType<typeof setTimeout>>(null)
+  const ftRef = useRef<ReturnType<typeof setInterval>>(null)
+  const btRef = useRef<ReturnType<typeof setTimeout>>(null)
 
-  const behavior: Behavior = tapBehavior ?? AUTO_SEQUENCE[autoIdx % AUTO_SEQUENCE.length]
-  const def = BEHAVIOR_DEFS[behavior]
-  const showFrame = isBlinking && behavior === 'idle' ? BLINK : def.frames[frameIdx % def.frames.length]
-
+  const beh: Behavior = tap ?? AUTO_SEQ[autoIdx % AUTO_SEQ.length]
+  const def = DEFS[beh]
+  const scene = def.scenes[fi % def.scenes.length]
+  const mainGrid = blinking && beh === 'idle' ? BLINK : scene.main
   const px = scale
 
-  // ── Behavior cycling ──
   useEffect(() => {
-    setFrameIdx(0)
-    let fi = 0
-    frameTimer.current = setInterval(() => { fi++; setFrameIdx(fi) }, def.frameMs)
-
+    setFi(0)
+    let i = 0
+    ftRef.current = setInterval(() => { i++; setFi(i) }, def.frameMs)
     if (def.jumpAnimation) {
       setTimeout(() => setJumpY(-px * 3), 250)
       setTimeout(() => setJumpY(0), 550)
-    } else {
-      setJumpY(0)
-    }
-
-    if (behavior === 'spin') {
-      setSpinDeg(720)
-      setTimeout(() => setSpinDeg(0), 600)
-    }
-
-    behaviorTimer.current = setTimeout(() => {
-      if (tapBehavior) {
-        setTapBehavior(null)
-      } else {
-        setAutoIdx((i) => i + 1)
-      }
+    } else setJumpY(0)
+    if (beh === 'spin') { setSpinDeg(720); setTimeout(() => setSpinDeg(0), 600) }
+    btRef.current = setTimeout(() => {
+      if (tap) setTap(null); else setAutoIdx(i2 => i2 + 1)
     }, def.durationMs)
+    return () => { if (ftRef.current) clearInterval(ftRef.current); if (btRef.current) clearTimeout(btRef.current) }
+  }, [autoIdx, tap, beh, def.frameMs, def.durationMs, def.jumpAnimation, px])
 
-    return () => {
-      if (frameTimer.current) clearInterval(frameTimer.current)
-      if (behaviorTimer.current) clearTimeout(behaviorTimer.current)
-    }
-  }, [autoIdx, tapBehavior, behavior, def.frameMs, def.durationMs, def.jumpAnimation, px])
-
-  // ── Blink ──
   useEffect(() => {
-    const blink = () => {
-      setIsBlinking(true)
-      setTimeout(() => setIsBlinking(false), 150)
-    }
-    const id = setInterval(blink, 2500 + Math.random() * 2000)
+    const b = () => { setBlinking(true); setTimeout(() => setBlinking(false), 150) }
+    const id = setInterval(b, 2500 + Math.random() * 2000)
     return () => clearInterval(id)
   }, [])
 
-  // ── Tap handler ──
   const handleTap = useCallback(() => {
-    const reaction = TAP_REACTIONS[Math.floor(Math.random() * TAP_REACTIONS.length)]
-    setTapBehavior(reaction)
+    setTap(TAP_REACTIONS[Math.floor(Math.random() * TAP_REACTIONS.length)])
   }, [])
+
+  // Accessory positioning
+  const accStyle = (pos: string): React.CSSProperties => {
+    switch (pos) {
+      case 'above': return { position: 'absolute', top: -px * 6, left: '50%', transform: 'translateX(-50%)' }
+      case 'above-right': return { position: 'absolute', top: -px * 4, right: -px * 2 }
+      case 'between-top': return { position: 'absolute', top: -px * 2, left: '50%', transform: 'translateX(-50%)' }
+      case 'between-mid': return { position: 'absolute', top: px * 2, left: '50%', transform: 'translateX(-50%)' }
+      default: return {}
+    }
+  }
 
   return (
     <div
       className={`inline-flex cursor-pointer flex-col items-center select-none ${className}`}
-      onClick={handleTap}
-      role="button"
-      tabIndex={0}
+      onClick={handleTap} role="button" tabIndex={0}
       aria-label="Klikni na maskota"
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleTap() }}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleTap() }}
     >
-      {/* Overlay: heart or zzz */}
-      <div className="relative flex justify-center" style={{ height: def.overlay ? px * 6 : 0 }}>
-        {def.overlay === 'heart' && (
-          <div className="absolute bottom-0 animate-fade-in-up">
-            <PixelGrid grid={HEART} px={px} />
-          </div>
-        )}
-        {def.overlay === 'zzz' && (
-          <div
-            className="absolute bottom-0 right-0 animate-fade-in-up"
-            style={{ transform: `translate(${px * 5}px, ${px * -1}px)` }}
-          >
-            <PixelGrid grid={ZZZ} px={Math.max(3, px - 2)} />
-          </div>
-        )}
-      </div>
-
-      {/* Body */}
+      {/* Scene container */}
       <div
-        className={behavior === 'idle' ? 'animate-mascot-float' : ''}
+        className={beh === 'idle' ? 'animate-mascot-float' : ''}
         style={{
           transform: `translateY(${jumpY}px) rotate(${spinDeg}deg)`,
-          transition: spinDeg !== 0
-            ? 'transform 0.5s ease-in-out'
-            : jumpY !== 0
-              ? 'transform 0.25s ease-out'
-              : 'transform 0.2s ease-in',
+          transition: spinDeg ? 'transform 0.5s ease-in-out' : jumpY ? 'transform 0.25s ease-out' : 'transform 0.2s ease-in',
         }}
       >
-        <PixelGrid grid={showFrame} px={px} />
-
-        {def.showLaptop && (
-          <div className="flex justify-center -mt-px">
-            <PixelGrid grid={LAPTOP} px={px} />
+        <div className="relative flex items-end" style={{ gap: px * 3 }}>
+          {/* Main mascot */}
+          <div className="relative">
+            <PGrid grid={mainGrid} px={px} />
+            {scene.laptop && (
+              <div className="flex justify-center -mt-px"><PGrid grid={LAPTOP} px={px} /></div>
+            )}
           </div>
-        )}
+
+          {/* Buddy (if scene has one) */}
+          {scene.buddy && <PGrid grid={scene.buddy} px={px} />}
+
+          {/* Floating accessory */}
+          {scene.accessory && (
+            <div style={accStyle(scene.accessory.position)} className="animate-fade-in-up pointer-events-none">
+              <PGrid grid={scene.accessory.grid} px={px} />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Shadow */}
       <div
-        className={`mt-1 rounded-full bg-black/10 ${behavior === 'idle' ? 'animate-mascot-shadow' : ''}`}
+        className={`mt-1 rounded-full bg-black/10 ${beh === 'idle' ? 'animate-mascot-shadow' : ''}`}
         style={{
-          width: px * 10,
+          width: scene.buddy ? px * 22 : px * 10,
           height: px * 1.5,
-          transform: jumpY !== 0 ? 'scaleX(0.6)' : undefined,
-          opacity: jumpY !== 0 ? 0.06 : undefined,
-          transition: 'transform 0.2s, opacity 0.2s',
+          transform: jumpY ? 'scaleX(0.6)' : undefined,
+          opacity: jumpY ? 0.06 : undefined,
+          transition: 'all 0.3s',
         }}
       />
 
-      {/* Tap hint (shows briefly then fades) */}
-      <p className="mt-2 text-xs text-muted/50 animate-fade-in-up" style={{ animationDelay: '3s' }}>
+      <p className="mt-2 text-xs text-muted/40 animate-fade-in-up" style={{ animationDelay: '3s' }}>
         klikni na mě
       </p>
     </div>
