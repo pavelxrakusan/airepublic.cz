@@ -1,4 +1,4 @@
-import { list, put, getDownloadUrl } from '@vercel/blob'
+import { list, put } from '@vercel/blob'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface ScoreEntry {
@@ -12,21 +12,27 @@ const RATE_LIMIT_MS = 60 * 1000
 const rateLimit = new Map<string, number>()
 
 async function readScores(): Promise<ScoreEntry[]> {
-  const { blobs } = await list({ prefix: BLOB_KEY })
-  if (blobs.length === 0) return []
+  try {
+    const { blobs } = await list({ prefix: BLOB_KEY })
+    if (blobs.length === 0) return []
 
-  const downloadUrl = await getDownloadUrl(blobs[0].url)
-  const res = await fetch(downloadUrl)
-  if (!res.ok) return []
+    // For private stores, blobs[0].downloadUrl has a token-signed URL
+    const url = blobs[0].downloadUrl ?? blobs[0].url
+    const res = await fetch(url)
+    if (!res.ok) return []
 
-  const data = await res.json()
-  return Array.isArray(data) ? data : []
+    const data = await res.json()
+    return Array.isArray(data) ? data : []
+  } catch {
+    return []
+  }
 }
 
 async function writeScores(scores: ScoreEntry[]): Promise<void> {
   await put(BLOB_KEY, JSON.stringify(scores), {
     access: 'private',
     addRandomSuffix: false,
+    allowOverwrite: true,
   })
 }
 
@@ -85,15 +91,22 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   rateLimit.set(ip, now)
 
-  const existing = await readScores()
-  const updated: ScoreEntry[] = [
-    ...existing,
-    { name, score, date: new Date().toISOString() },
-  ]
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10)
+  try {
+    const existing = await readScores()
+    const updated: ScoreEntry[] = [
+      ...existing,
+      { name, score, date: new Date().toISOString() },
+    ]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10)
 
-  await writeScores(updated)
-
-  return NextResponse.json(updated)
+    await writeScores(updated)
+    return NextResponse.json(updated)
+  } catch (err) {
+    console.error('Snake scores write error:', err)
+    return NextResponse.json(
+      { error: 'Chyba při ukládání' },
+      { status: 500 }
+    )
+  }
 }
