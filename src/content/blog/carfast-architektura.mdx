@@ -1,0 +1,176 @@
+---
+title: "Jak jsem s AI postavil autobazar — architektura CARFAST.cz"
+description: "Kompletní autobazarová platforma bez jediného frameworku. Custom PHP MVC, Claude API na import aut, 7 scraperů, 4 jazyky a zero dependencies. Tady je jak to celé funguje."
+date: "2026-03-31"
+tags: ["Claude", "PHP", "projekt", "workflow", "AI integrace"]
+---
+
+Postavil jsem kompletní autobazar bez jediného frameworku a bez `npm install`.
+
+Žádný Laravel. Žádný Symfony. Žádný React. Žádný Webpack. Vanilla PHP 8.3, MySQL, čisté CSS a JavaScript. Deploy? Nahrát soubory přes FTP a je to live.
+
+A funguje to. **CARFAST.cz** je česká platforma pro import a prodej ověřených aut z EU — a pod kapotou je to nejzajímavější projekt, co jsem s Claudem postavil.
+
+## Proč custom stack?
+
+Tři důvody:
+
+**Jednoduchost deploye.** Žádný build step, žádný CI/CD pipeline, žádné `npm run build` co trvá 3 minuty. Nahraju soubory → běží. Na jakémkoliv PHP hostingu za 50 Kč měsíčně.
+
+**Plná kontrola.** Každý řádek kódu je můj. Žádné magické ORM, žádné dependency hell, žádné "proč se to rozbilo po npm update." Když něco nefunguje, vím přesně kde hledat.
+
+**Rychlost vývoje s AI.** Paradoxně — custom framework + Claude je rychlejší než framework s dokumentací. Proč? Protože Claude rozumí mému kódu líp než jakékoliv abstrakci třetí strany. Řeknu "přidej nový controller pro kalkulačku importu" a Claude vidí jak vypadají ostatní controllery, jakou strukturu mají routy, jak funguje view system. Zero guesswork.
+
+## Architektura
+
+```
+index.php → Router → Controller → Model → View
+```
+
+Vlastní MVC framework s PSR-4 autoloaderem. Request přijde, Router namatchuje URL na controller akci, ta si sáhne do modelu pro data a renderuje šablonu v layoutu.
+
+**60+ routes** s jedním trikem, co mi trvalo longest: automatický překlad URL segmentů do 4 jazyků.
+
+```
+/vozy/detail/skoda-octavia    (čeština)
+/cars/detail/skoda-octavia    (angličtina)
+/autos/detail/skoda-octavia   (němčina)
+/auto/detail/skoda-octavia    (holandština)
+```
+
+Není to jen prefix `/cs/vozy` — Router skutečně překládá celé segmenty. Čistší URL, lepší SEO, přirozenější pro uživatele.
+
+**Bezpečnost** řešená od začátku:
+- CSRF auto-validace na každém POST requestu
+- PDO prepared statements všude (žádná SQL concatenace, nikdy)
+- `htmlspecialchars()` na každém výstupu
+- Bcrypt hesla + brute-force ochrana admin přihlášení
+
+## Kde Claude dělá těžkou práci
+
+Tohle je ta zajímavá část. Claude není jen "chatbot na web" — je integrovaný přímo v jádru aplikace přes centrální `ClaudeService`.
+
+### Jeden wrapper, pět use cases
+
+`ClaudeService` je singleton, co obaluje celou komunikaci s Anthropic API:
+- **Rate limiting** — sliding window, max 30 požadavků za minutu
+- **Cost tracking** — každé volání loguje input/output tokeny + cenu v USD do `ai_usage_log` tabulky
+- **Retry logika** — exponenciální backoff při transientních chybách
+
+Vím přesně kolik AI stojí za měsíc. Každý cent je trackovaný.
+
+### 1. Import aut z neznámých portálů
+
+Uživatel vloží URL inzerátu nebo celý text → Claude extrahuje strukturovaná data: cena, rok výroby, kilometry, palivo, výbava, stav... Preview v adminu → potvrdíš → uloženo v databázi.
+
+Tohle je killer feature. Místo ručního přepisování 30 polí z inzerátu to zvládne Claude za 3 sekundy. A rozumí i blbě formátovaným inzerátům z Bazoše.
+
+### 2. Batch generování popisů
+
+Claude napíše SEO-friendly český popis z parametrů vozu. DeepL ho pak automaticky přeloží do angličtiny, němčiny a holandštiny.
+
+Dřív: 20 minut na jeden popis × 4 jazyky = 80 minut na auto.
+Teď: 10 sekund generování + 5 sekund překlad = 15 sekund na auto.
+
+### 3. AI Watchdog (hlídací pes)
+
+Tohle mě baví nejvíc. Claude sémanticky matchuje nové inzeráty proti nastaveným kritériím. Každý inzerát dostane skóre 0.0–1.0 a při ≥0.75 přijde notifikace.
+
+Hledáš Octavii do 200 tisíc km pod 300 tisíc Kč? Watchdog najde relevantní nabídky dřív než ty stihneš refreshnout Sauto.
+
+### 4. Admin asistent
+
+Konverzační AI přímo v admin panelu. Má kontext — ví kolik aut je v nabídce, kolik je neřešených poptávek, jaký je denní traffic. Zeptáš se "kolik aut jsme přidali tento týden?" a dostaneš odpověď bez proklikávání dashboardu.
+
+### 5. Překlad FAQ
+
+Claude + DeepL chain pro generování odpovědí ve 4 jazycích. Napíšeš FAQ v češtině → Claude vylepší formulaci → DeepL přeloží → hotovo ve všech jazycích.
+
+## Scraping ze 7 portálů
+
+Vlastní scrapery pro:
+- **mobile.de** (Německo, Cloudflare ochrana)
+- **AutoScout24** (EU)
+- **2dehands.be** (Belgie)
+- **Sauto.cz** (Česko)
+- **TipCars** (Česko)
+- **AAA Auto** (Česko)
+- **Bazoš.cz** (Česko)
+
+Každý portál má svůj scraper, protože každý má jiný HTML, jiné API endpointy a jinou ochranu.
+
+**Obrana proti blokování:**
+- Rotace 6 user-agentů (mobilní + tabletové UA)
+- Exponenciální backoff retry (1s, 3s, 9s)
+- Proxy přes ScraperAPI pro Cloudflare-chráněné weby (mobile.de je hardcore)
+- Graceful degradation — částečná data jsou lepší než žádná
+
+**Batch import:** Vložíš až 20 URL najednou → systém rozpozná portál podle domény → scrape → preview → uložení + automatický překlad do všech jazyků.
+
+## 4 jazyky everywhere
+
+Překladový systém kombinuje tři přístupy:
+
+1. **UI texty** — `t('key')` funkce, překlady v databázi
+2. **Entity překlady** — `te('group', 'key', id)` pro popisy aut, FAQ, blog
+3. **URL překlad** — Router překládá celé URL segmenty
+
+**Detekce jazyka:** URL prefix → cookie → Accept-Language header → default (čeština).
+
+**Cache:** Každý překlad se hashuje (SHA256) a ukládá do `translation_cache` tabulky. Stejný text se nepřekládá dvakrát — šetří DeepL API volání.
+
+## Page Builder s 18 šablonami
+
+Stránky se skládají ze sekcí uložených jako JSON v databázi:
+
+`hero_search`, `hero_simple`, `cars_featured`, `categories`, `car_banner`, `counters`, `services`, `steps`, `cta`, `testimonials`, `faq`, `newsletter`, `blog_preview`, `contact_form`, `calculator`, `cars_listing`, `blog_listing`, `text`, `legal`
+
+Drag-and-drop řazení v adminu. Každá sekce má vlastní JSON schema pro obsah. Překlady se překrývají přes databázi — jeden JSON content, N jazyků.
+
+Výsledek: marketingový tým (kdybych ho měl) může stavět landing pages bez programátora.
+
+## Admin panel — 16 sekcí
+
+Dashboard, Vozy, Import, Hlídací pes, Výkup, Blog, Stránky, Navigace, Nastavení, Zálohy, Překlady, Poptávky, Newsletter, Obsah, FAQ, AI Asistent.
+
+**CRM pipeline:** nový → kontaktován → nabídka → jednání → konverze. Kanban board přímo v adminu.
+
+**Výkup aut:** Checklist inspekce, nabídky, dokumenty — celý workflow.
+
+**Zálohy:** Export databáze + uploady jako ZIP, one-click restore.
+
+## Čísla
+
+| Metrika | Hodnota |
+|---------|---------|
+| Routes | 60+ |
+| Portálové scrapery | 7 |
+| Page builder šablony | 18 |
+| Jazyky | 4 |
+| Emailové šablony | 7 |
+| AI use cases | 5 |
+| Admin sekcí | 16 |
+| Externí závislosti | **0** |
+
+Nula externích závislostí. Žádný Composer. Žádný npm. Žádný Webpack. Celá aplikace je self-contained PHP.
+
+## Co jsem se naučil
+
+**1. Zero dependencies je svoboda.** Žádný breaking change v knihovně, žádný security patch co rozbije build. Kontroluješ celý stack.
+
+**2. AI cost tracking je nutnost.** Bez logování bych neměl tušení, kolik Claude stojí. S logováním vím přesně: import jednoho auta = ~$0.03. Watchdog scan 100 inzerátů = ~$0.15. Měsíční náklady na AI: pod $20.
+
+**3. Kaskádové systémy fungují.** Email: Brevo API → PHP `mail()`. Config: DB → soubor → `.env`. Import: scraper → AI fallback. Vždycky mít plan B.
+
+**4. Claude rozumí custom kódu líp než frameworkům.** Protože můj kód je straightforward PHP bez magie. Claude nemusí hledat v dokumentaci třetí strany — vidí router, controller, model a ví co dělat.
+
+## Co dál
+
+CARFAST.cz je připravený na modulární expanzi — každý autobazar = vlastní instance na vlastní doméně. Sdílený core, custom branding, vlastní doména.
+
+Na roadmapě:
+- Chatbot modul pro zákazníky (Claude odpovídá na dotazy k autům)
+- Automatická cenová analýza (srovnání s trhem)
+- Mobile app (PWA)
+
+A to všechno bez `npm install`. Protože proč ne.
