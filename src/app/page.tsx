@@ -1,4 +1,23 @@
+import type { Metadata } from 'next'
 import { getAllContent } from '@/lib/mdx'
+
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://airepublic.cz'
+
+export const metadata: Metadata = {
+  alternates: { canonical: baseUrl },
+  openGraph: {
+    title: 'airepublic.cz — Průvodce světem umělé inteligence',
+    description: 'Český AI portál — recenze nástrojů, návody, novinky a vibe coding projekty.',
+    type: 'website',
+    url: baseUrl,
+    images: [{ url: `${baseUrl}/api/og?title=airepublic.cz&description=${encodeURIComponent('Průvodce světem umělé inteligence')}`, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'airepublic.cz',
+    description: 'Český AI portál — recenze nástrojů, návody, novinky a vibe coding projekty.',
+  },
+}
 import type { BlogPost, Tool, Project } from '@/lib/types'
 import { ArticleCard } from '@/components/ArticleCard'
 import { ToolCard } from '@/components/ToolCard'

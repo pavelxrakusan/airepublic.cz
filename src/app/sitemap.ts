@@ -6,6 +6,7 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://airepublic.cz'
 export default function sitemap(): MetadataRoute.Sitemap {
   const blogSlugs = getAllSlugs('blog')
   const toolSlugs = getAllSlugs('nastroje')
+  const projectSlugs = getAllSlugs('projekty')
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: baseUrl, changeFrequency: 'weekly', priority: 1 },
@@ -27,5 +28,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }))
 
-  return [...staticRoutes, ...blogRoutes, ...toolRoutes]
+  const projectRoutes: MetadataRoute.Sitemap = projectSlugs.map((slug) => ({
+    url: `${baseUrl}/projekty/${slug}`,
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }))
+
+  return [...staticRoutes, ...blogRoutes, ...toolRoutes, ...projectRoutes]
 }

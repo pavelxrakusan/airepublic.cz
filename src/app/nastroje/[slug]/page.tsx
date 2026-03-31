@@ -5,6 +5,8 @@ import { getContentBySlug, getAllSlugs, getCategoryLabel } from '@/lib/mdx'
 import type { Tool } from '@/lib/types'
 import Link from 'next/link'
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://airepublic.cz'
+
 export function generateStaticParams() {
   return getAllSlugs('nastroje').map((slug) => ({ slug }))
 }
@@ -17,9 +19,26 @@ export async function generateMetadata({
   const { slug } = await params
   try {
     const { frontmatter } = getContentBySlug<Tool>('nastroje', slug)
+    const title = `${frontmatter.title} — Recenze`
+    const ogImage = `${baseUrl}/api/og?title=${encodeURIComponent(frontmatter.title)}&description=${encodeURIComponent(`${frontmatter.rating}/5 ★ — ${frontmatter.description.slice(0, 100)}`)}`
+
     return {
-      title: `${frontmatter.title} — Recenze`,
+      title,
       description: frontmatter.description,
+      alternates: { canonical: `${baseUrl}/nastroje/${slug}` },
+      openGraph: {
+        title,
+        description: frontmatter.description,
+        type: 'article',
+        url: `${baseUrl}/nastroje/${slug}`,
+        images: [{ url: ogImage, width: 1200, height: 630, alt: frontmatter.title }],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description: frontmatter.description,
+        images: [ogImage],
+      },
     }
   } catch {
     return {}
@@ -59,8 +78,33 @@ export default async function ToolDetailPage({
 
   const { frontmatter, content } = tool
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: frontmatter.title,
+    description: frontmatter.description,
+    applicationCategory: 'AI Tool',
+    url: frontmatter.affiliateUrl ?? `${baseUrl}/nastroje/${slug}`,
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: frontmatter.rating,
+      bestRating: 5,
+      worstRating: 1,
+      ratingCount: 1,
+    },
+    review: {
+      '@type': 'Review',
+      author: { '@type': 'Person', name: 'Pavel Rakušan', url: `${baseUrl}/o-mne` },
+      reviewRating: { '@type': 'Rating', ratingValue: frontmatter.rating, bestRating: 5 },
+    },
+  }
+
   return (
     <article className="mx-auto max-w-5xl px-6 pt-24 pb-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className="mb-10">
         <Link
           href="/nastroje"

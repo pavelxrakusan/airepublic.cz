@@ -6,6 +6,8 @@ import type { BlogPost } from '@/lib/types'
 import Link from 'next/link'
 import Image from 'next/image'
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://airepublic.cz'
+
 export function generateStaticParams() {
   return getAllSlugs('blog').map((slug) => ({ slug }))
 }
@@ -18,14 +20,28 @@ export async function generateMetadata({
   const { slug } = await params
   try {
     const { frontmatter } = getContentBySlug<BlogPost>('blog', slug)
+    const ogImage = frontmatter.image
+      ? `${baseUrl}${frontmatter.image}`
+      : `${baseUrl}/api/og?title=${encodeURIComponent(frontmatter.title)}&description=${encodeURIComponent(frontmatter.description)}`
+
     return {
       title: frontmatter.title,
       description: frontmatter.description,
+      alternates: { canonical: `${baseUrl}/blog/${slug}` },
       openGraph: {
         title: frontmatter.title,
         description: frontmatter.description,
         type: 'article',
         publishedTime: frontmatter.date,
+        tags: frontmatter.tags,
+        url: `${baseUrl}/blog/${slug}`,
+        images: [{ url: ogImage, width: 1200, height: 630, alt: frontmatter.title }],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: frontmatter.title,
+        description: frontmatter.description,
+        images: [ogImage],
       },
     }
   } catch {
@@ -47,8 +63,35 @@ export default async function BlogPostPage({
     notFound()
   }
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.frontmatter.title,
+    description: post.frontmatter.description,
+    datePublished: post.frontmatter.date,
+    image: post.frontmatter.image
+      ? `${baseUrl}${post.frontmatter.image}`
+      : `${baseUrl}/api/og?title=${encodeURIComponent(post.frontmatter.title)}`,
+    url: `${baseUrl}/blog/${slug}`,
+    author: {
+      '@type': 'Person',
+      name: 'Pavel Rakušan',
+      url: `${baseUrl}/o-mne`,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'airepublic.cz',
+      url: baseUrl,
+    },
+    keywords: post.frontmatter.tags.join(', '),
+  }
+
   return (
     <article className="mx-auto max-w-5xl px-6 pt-24 pb-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className="mb-10">
         <Link
           href="/blog"
@@ -71,7 +114,7 @@ export default async function BlogPostPage({
             />
           </div>
         )}
-        <div className="flex items-center gap-3 text-sm text-muted">
+        <div className="mt-4 flex items-center gap-3 text-sm text-muted">
           <time dateTime={post.frontmatter.date}>
             {new Date(post.frontmatter.date).toLocaleDateString('cs-CZ', {
               day: 'numeric',

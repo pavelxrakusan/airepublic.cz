@@ -3,9 +3,18 @@ import { getAllContent } from '@/lib/mdx'
 import type { BlogPost } from '@/lib/types'
 import { ArticleCard } from '@/components/ArticleCard'
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://airepublic.cz'
+
 export const metadata: Metadata = {
   title: 'Blog',
   description: 'Články o umělé inteligenci, návody a novinky ze světa AI.',
+  alternates: { canonical: `${baseUrl}/blog` },
+  openGraph: {
+    title: 'Blog | airepublic.cz',
+    description: 'Články o umělé inteligenci, návody a novinky ze světa AI.',
+    url: `${baseUrl}/blog`,
+    images: [{ url: `${baseUrl}/api/og?title=Blog&description=${encodeURIComponent('Články o AI, návody a novinky')}`, width: 1200, height: 630 }],
+  },
 }
 
 export default function BlogPage() {
