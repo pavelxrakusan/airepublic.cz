@@ -92,20 +92,25 @@ export function HeroParticles() {
     function buildParticles(w: number, h: number) {
       const particles: Particle[] = []
       const isMobile = w < 640
-      // Denser particles — smaller gap = more dots
       const gap = isMobile ? 3 : 2
 
       const oc = makeOffscreen(w, h)
-      // Big text — fill most of the width
-      const fontSize = isMobile
-        ? Math.min(w * 0.13, 52)
-        : Math.min(w * 0.11, 120)
       const fontFamily = getComputedStyle(document.body).fontFamily
       oc.fillStyle = '#000'
-      oc.font = `900 ${fontSize}px ${fontFamily}`
       oc.textAlign = 'center'
       oc.textBaseline = 'middle'
-      oc.fillText('airepublic.cz', w / 2, h / 2)
+
+      if (isMobile) {
+        // Two lines on mobile so it fits
+        const fontSize = Math.min(w * 0.12, 44)
+        oc.font = `900 ${fontSize}px ${fontFamily}`
+        oc.fillText('airepublic', w / 2, h * 0.42)
+        oc.fillText('.cz', w / 2, h * 0.42 + fontSize * 1.15)
+      } else {
+        const fontSize = Math.min(w * 0.11, 120)
+        oc.font = `900 ${fontSize}px ${fontFamily}`
+        oc.fillText('airepublic.cz', w / 2, h / 2)
+      }
 
       const imageData = oc.getImageData(0, 0, w, h).data
       const bounds = findBounds(imageData, w, h, gap)
