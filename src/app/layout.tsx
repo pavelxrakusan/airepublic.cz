@@ -5,6 +5,7 @@ import { Navigation } from '@/components/Navigation'
 import { Footer } from '@/components/Footer'
 import { FloatingMascot } from '@/components/FloatingMascot'
 import { KonamiListener } from '@/components/EasterEggs'
+import { Analytics } from '@vercel/analytics/react'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <FloatingMascot />
         <KonamiListener />
+        <Analytics />
       </body>
     </html>
   )
