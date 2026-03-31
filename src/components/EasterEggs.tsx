@@ -1,54 +1,125 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a']
 
-/* ── Firework particle ─────────────────────────────────── */
-function Firework({ onDone }: { onDone: () => void }) {
+/* ═══════════════════════════════════════════════════════
+   MEGA FIREWORK — full screen, multiple bursts, CZ colors
+   ═══════════════════════════════════════════════════════ */
+
+const CZ_COLORS = ['#11457E', '#FFFFFF', '#D7141A']
+const ACCENT_COLORS = ['#7c3aed', '#f59e0b', '#22c55e', '#ec4899', '#C0613A']
+const ALL_COLORS = [...CZ_COLORS, ...CZ_COLORS, ...ACCENT_COLORS]
+
+interface Spark {
+  id: number
+  x: number
+  y: number
+  tx: number
+  ty: number
+  color: string
+  size: number
+  delay: number
+}
+
+function MegaFirework({ onDone }: { onDone: () => void }) {
+  const [sparks, setSparks] = useState<Spark[]>([])
+  const [phase, setPhase] = useState(0)
+
   useEffect(() => {
-    const t = setTimeout(onDone, 2500)
-    return () => clearTimeout(t)
+    const allSparks: Spark[] = []
+    let id = 0
+
+    // 5 burst points across the screen
+    const bursts = [
+      { x: 30, y: 35, delay: 0 },
+      { x: 70, y: 30, delay: 300 },
+      { x: 50, y: 25, delay: 150 },
+      { x: 20, y: 45, delay: 400 },
+      { x: 80, y: 40, delay: 500 },
+    ]
+
+    for (const burst of bursts) {
+      const count = 50 + Math.floor(Math.random() * 30)
+      for (let i = 0; i < count; i++) {
+        const angle = (i / count) * Math.PI * 2 + Math.random() * 0.3
+        const speed = 80 + Math.random() * 200
+        allSparks.push({
+          id: id++,
+          x: burst.x,
+          y: burst.y,
+          tx: Math.cos(angle) * speed,
+          ty: Math.sin(angle) * speed,
+          color: ALL_COLORS[Math.floor(Math.random() * ALL_COLORS.length)],
+          size: 3 + Math.random() * 5,
+          delay: burst.delay + Math.random() * 100,
+        })
+      }
+    }
+
+    setSparks(allSparks)
+
+    // Phase transitions
+    setTimeout(() => setPhase(1), 100)
+    setTimeout(() => setPhase(2), 2500)
+    setTimeout(onDone, 4000)
   }, [onDone])
 
-  const colors = ['#D7141A', '#11457E', '#7c3aed', '#f59e0b', '#22c55e', '#C0613A']
-  const particles = Array.from({ length: 40 }, (_, i) => {
-    const angle = (i / 40) * Math.PI * 2
-    const speed = 60 + Math.random() * 100
-    const color = colors[i % colors.length]
-    return { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed, color, size: 4 + Math.random() * 6 }
-  })
-
   return (
-    <div className="fixed inset-0 z-[100] pointer-events-none flex items-center justify-center">
-      <p className="absolute top-1/3 text-2xl font-black text-foreground animate-fade-in-up">
-        🎉 Konami kód aktivován! 🎉
-      </p>
-      {particles.map((p, i) => (
+    <div className="fixed inset-0 z-[100] overflow-hidden pointer-events-none">
+      {/* Dark overlay */}
+      <div
+        className="absolute inset-0 bg-black transition-opacity duration-500"
+        style={{ opacity: phase === 0 ? 0 : phase === 2 ? 0 : 0.7 }}
+      />
+
+      {/* Title */}
+      {phase >= 1 && phase < 2 && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <p className="text-5xl font-black tracking-tight text-white sm:text-7xl animate-fade-in-up"
+             style={{ textShadow: '0 0 40px rgba(124, 58, 237, 0.8), 0 0 80px rgba(124, 58, 237, 0.4)' }}>
+            KONAMI CODE
+          </p>
+          <p className="mt-2 text-2xl font-bold text-accent animate-fade-in-up sm:text-3xl"
+             style={{ animationDelay: '0.3s', textShadow: '0 0 20px rgba(124, 58, 237, 0.6)' }}>
+            UNLOCKED!
+          </p>
+        </div>
+      )}
+
+      {/* Sparks */}
+      {sparks.map((s) => (
         <div
-          key={i}
-          className="absolute h-2 w-2 rounded-full"
+          key={s.id}
+          className="absolute rounded-full"
           style={{
-            backgroundColor: p.color,
-            width: p.size,
-            height: p.size,
-            animation: `konami-particle 2s ease-out forwards`,
-            animationDelay: `${Math.random() * 0.3}s`,
-            // @ts-expect-error CSS custom properties for particle direction
-            '--tx': `${p.x}px`,
-            '--ty': `${p.y}px`,
-          }}
+            left: `${s.x}%`,
+            top: `${s.y}%`,
+            width: s.size,
+            height: s.size,
+            backgroundColor: s.color,
+            boxShadow: `0 0 ${s.size * 2}px ${s.color}`,
+            animation: `konami-particle 2s ease-out ${s.delay}ms forwards`,
+            '--tx': `${s.tx}px`,
+            '--ty': `${s.ty}px`,
+          } as React.CSSProperties}
         />
       ))}
     </div>
   )
 }
 
-/* ── Dark mode toggle component (used in Navigation) ──── */
-export function DarkModeToggle() {
+/* ═══════════════════════════════════════════════════════
+   DARK MODE TOGGLE
+   ═══════════════════════════════════════════════════════ */
+
+export function DarkModeToggle({ className = '' }: { className?: string }) {
   const [dark, setDark] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const stored = localStorage.getItem('theme')
     const isDark = stored === 'dark'
     setDark(isDark)
@@ -62,11 +133,13 @@ export function DarkModeToggle() {
     localStorage.setItem('theme', next ? 'dark' : 'light')
   }, [dark])
 
+  if (!mounted) return null
+
   return (
     <button
       onClick={toggle}
-      className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:text-foreground"
-      aria-label={dark ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}
+      className={`flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:text-foreground ${className}`}
+      aria-label={dark ? 'Světlý režim' : 'Tmavý režim'}
     >
       {dark ? (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -81,26 +154,26 @@ export function DarkModeToggle() {
   )
 }
 
-/* ── Konami code listener ──────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   KONAMI CODE LISTENER
+   ═══════════════════════════════════════════════════════ */
+
 export function KonamiListener() {
-  const [showFirework, setShowFirework] = useState(false)
-  const [sequence, setSequence] = useState<string[]>([])
+  const [active, setActive] = useState(false)
+  const seq = useRef<string[]>([])
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      setSequence(prev => {
-        const next = [...prev, e.key].slice(-KONAMI.length)
-        if (next.length === KONAMI.length && next.every((k, i) => k === KONAMI[i])) {
-          setShowFirework(true)
-          return []
-        }
-        return next
-      })
+      seq.current = [...seq.current, e.key].slice(-KONAMI.length)
+      if (seq.current.length === KONAMI.length && seq.current.every((k, i) => k === KONAMI[i])) {
+        setActive(true)
+        seq.current = []
+      }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [])
 
-  if (!showFirework) return null
-  return <Firework onDone={() => setShowFirework(false)} />
+  if (!active) return null
+  return <MegaFirework onDone={() => setActive(false)} />
 }

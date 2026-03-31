@@ -4,7 +4,7 @@ import type { Project, ContentItem } from '@/lib/types'
 const statusColors: Record<string, string> = {
   hotovo: 'border-green-200 bg-green-50 text-green-700',
   rozpracovano: 'border-amber-200 bg-amber-50 text-amber-700',
-  planovano: 'border-border bg-white text-muted',
+  planovano: 'border-border bg-background text-muted',
 }
 
 export function ProjectCard({ project }: { project: ContentItem<Project> }) {
@@ -29,7 +29,7 @@ export function ProjectCard({ project }: { project: ContentItem<Project> }) {
         {project.frontmatter.techStack.map((tech) => (
           <span
             key={tech}
-            className="rounded-full border border-border bg-white px-2.5 py-0.5 font-mono text-xs text-muted"
+            className="rounded-full border border-border bg-background px-2.5 py-0.5 font-mono text-xs text-muted"
           >
             {tech}
           </span>

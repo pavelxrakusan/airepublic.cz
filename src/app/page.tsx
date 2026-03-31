@@ -15,7 +15,7 @@ export default function HomePage() {
   return (
     <>
       {/* ═══ Hero ═══ */}
-      <section className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden bg-white">
+      <section className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden bg-background">
         {/* Desktop: canvas particles */}
         <div className="hidden sm:block">
           <HeroParticles />
@@ -47,7 +47,7 @@ export default function HomePage() {
             {['Next.js 15', 'React 19', 'TypeScript', 'Tailwind v4', 'MDX', 'Vercel'].map((tech) => (
               <span
                 key={tech}
-                className="rounded-full border border-border bg-white/80 px-3 py-1 font-mono text-xs text-muted backdrop-blur-sm"
+                className="rounded-full border border-border bg-background/80 px-3 py-1 font-mono text-xs text-muted backdrop-blur-sm"
               >
                 {tech}
               </span>

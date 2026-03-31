@@ -48,9 +48,11 @@ export function Navigation() {
           <DarkModeToggle />
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:text-foreground sm:hidden"
+        {/* Mobile: dark mode + hamburger */}
+        <div className="flex items-center gap-1 sm:hidden">
+          <DarkModeToggle />
+          <button
+            className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:text-foreground"
           onClick={() => setOpen(!open)}
           aria-label={open ? 'Zavřít menu' : 'Otevřít menu'}
           aria-expanded={open}
@@ -69,7 +71,8 @@ export function Navigation() {
               </>
             )}
           </svg>
-        </button>
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}

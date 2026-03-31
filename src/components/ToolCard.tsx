@@ -26,7 +26,7 @@ export function ToolCard({ tool }: { tool: ContentItem<Tool> }) {
       className="group block rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:border-border-hover hover:shadow-md"
     >
       <div className="mb-3 flex items-center justify-between">
-        <span className="rounded-full border border-border bg-white px-2.5 py-0.5 text-xs text-muted">
+        <span className="rounded-full border border-border bg-background px-2.5 py-0.5 text-xs text-muted">
           {getCategoryLabel(tool.frontmatter.category)}
         </span>
         <StarRating rating={tool.frontmatter.rating} />

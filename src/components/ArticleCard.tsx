@@ -29,7 +29,7 @@ export function ArticleCard({ post }: { post: ContentItem<BlogPost> }) {
           {post.frontmatter.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-border bg-white px-2.5 py-0.5 text-xs text-muted"
+              className="rounded-full border border-border bg-background px-2.5 py-0.5 text-xs text-muted"
             >
               {tag}
             </span>
