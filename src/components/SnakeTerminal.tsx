@@ -52,11 +52,55 @@ export default function SnakeTerminal() {
           setPlaying(true)
         }, 500)
       } else if (normalized === 'help') {
-        addLine('Dostupné příkazy: snake, help, clear', 'output')
+        addLine('Dostupné příkazy: snake, help, clear, sudo, rm -rf, exit, hack, matrix', 'output')
       } else if (normalized === 'clear') {
         setLines([])
+      } else if (normalized === 'sudo snake') {
+        addLine('Jsi si fakt jistej? Opravdu? Nápověda 50:50...', 'output')
+        addLine('...nic, spouštím to normálně.', 'success')
+        setTimeout(() => setPlaying(true), 800)
+      } else if (normalized === 'sudo' || normalized === 'sudo su' || normalized === 'sudo rm -rf /') {
+        addLine('Tohle už fakt nedělej.', 'error')
+        addLine('Vím kde bydlíš. 🏠', 'error')
+      } else if (normalized === 'rm -rf' || normalized === 'rm -rf /' || normalized === 'rm -rf /*') {
+        addLine('Mazání celého blogu...', 'error')
+        addLine('...just kidding. Ale zkus to znovu a uvidíš.', 'output')
+      } else if (normalized === 'exit' || normalized === 'quit' || normalized === 'q') {
+        addLine('Odejít? Teď? Když je tu Snake?', 'output')
+        addLine('Odmítám. Napiš "snake".', 'error')
+      } else if (normalized === 'hack' || normalized === 'hack nasa' || normalized === 'hack pentagon') {
+        addLine('Připojování k satelitu...', 'success')
+        addLine('Obcházení firewallu...', 'success')
+        addLine('Stahování přísně tajných dat...', 'success')
+        addLine('...ERROR: Tvůj internet je na to moc pomalý.', 'error')
+      } else if (normalized === 'matrix') {
+        addLine('Wake up, Neo...', 'success')
+        addLine('The Matrix has you...', 'success')
+        addLine('Follow the white rabbit. 🐇', 'output')
+        addLine('...nebo prostě napiš "snake".', 'output')
+      } else if (normalized === 'ls' || normalized === 'dir') {
+        addLine('snake.exe    readme.txt    totally-not-a-virus.bat', 'output')
+      } else if (normalized === 'cat readme.txt' || normalized === 'type readme.txt') {
+        addLine('PŘEČTI SI TOHLE:', 'output')
+        addLine('1. Napiš "snake"', 'output')
+        addLine('2. Hraj', 'output')
+        addLine('3. Profit', 'output')
+      } else if (normalized === 'whoami') {
+        addLine('Někdo, kdo by měl hrát Snake místo psaní příkazů.', 'output')
+      } else if (normalized === 'ping google.com') {
+        addLine('64 bytes from google.com: joke_seq=1 ttl=64 time=lol ms', 'output')
+      } else if (normalized === 'coffee' || normalized === 'make coffee') {
+        addLine('Vaření kávy... ☕', 'success')
+        addLine('418 I\'m a teapot. Jsem terminál, ne kávovar.', 'error')
       } else {
-        addLine(`command not found: ${cmd}`, 'error')
+        const responses = [
+          `command not found: ${cmd}`,
+          `"${cmd}"? To jako vážně?`,
+          `Neznám "${cmd}". Zkus "help", génie.`,
+          `${cmd}: permission denied (a to z dobrého důvodu)`,
+          `Hmm, "${cmd}"... to je zajímavý způsob jak napsat "snake".`,
+        ]
+        addLine(responses[Math.floor(Math.random() * responses.length)], 'error')
       }
     },
     [addLine],
@@ -87,8 +131,11 @@ export default function SnakeTerminal() {
 
   const handleClose = useCallback(() => {
     setPlaying(false)
-    addLine('Hra ukončena.', 'output')
-  }, [addLine])
+    // Don't add "Hra ukončena" if game over already handled it
+    if (gameOverScore === null) {
+      addLine('Hra ukončena.', 'output')
+    }
+  }, [addLine, gameOverScore])
 
   const handleNameSubmit = useCallback(async () => {
     const trimmedName = name.trim()

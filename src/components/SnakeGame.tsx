@@ -59,6 +59,7 @@ export default function SnakeGame({ onGameOver, onClose }: SnakeGameProps) {
   const lastTickRef = useRef(0)
   const animFrameRef = useRef<number>(0)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
+  const deadAtRef = useRef(0)
 
   const [score, setScore] = useState(0)
   const [status, setStatus] = useState<GameStatus>('idle')
@@ -181,6 +182,7 @@ export default function SnakeGame({ onGameOver, onClose }: SnakeGameProps) {
         // Wall collision
         if (nx < 0 || nx >= GRID_SIZE || ny < 0 || ny >= GRID_SIZE) {
           statusRef.current = 'dead'
+          deadAtRef.current = Date.now()
           setStatus('dead')
           onGameOverRef.current(scoreRef.current)
           draw()
@@ -192,6 +194,7 @@ export default function SnakeGame({ onGameOver, onClose }: SnakeGameProps) {
         // Self collision
         if (snakeRef.current.some((s) => s.x === nx && s.y === ny)) {
           statusRef.current = 'dead'
+          deadAtRef.current = Date.now()
           setStatus('dead')
           onGameOverRef.current(scoreRef.current)
           draw()
@@ -236,8 +239,16 @@ export default function SnakeGame({ onGameOver, onClose }: SnakeGameProps) {
         return
       }
 
-      if (statusRef.current === 'idle' || statusRef.current === 'dead') {
+      if (statusRef.current === 'idle') {
         startGame()
+        return
+      }
+
+      if (statusRef.current === 'dead') {
+        // Wait 1.5s before allowing restart so player sees game over screen
+        if (Date.now() - deadAtRef.current > 1500) {
+          onCloseRef.current()
+        }
         return
       }
 
@@ -280,8 +291,15 @@ export default function SnakeGame({ onGameOver, onClose }: SnakeGameProps) {
       const dy = t.clientY - touchStartRef.current.y
       touchStartRef.current = null
 
-      if (statusRef.current === 'idle' || statusRef.current === 'dead') {
+      if (statusRef.current === 'idle') {
         startGame()
+        return
+      }
+
+      if (statusRef.current === 'dead') {
+        if (Date.now() - deadAtRef.current > 1500) {
+          onCloseRef.current()
+        }
         return
       }
 
@@ -379,7 +397,7 @@ export default function SnakeGame({ onGameOver, onClose }: SnakeGameProps) {
               Skóre: {score}
             </p>
             <p className="text-green-400 font-mono text-xs animate-pulse mt-2">
-              Stiskni cokoliv pro restart
+              Stiskni cokoliv pro zavření
             </p>
           </div>
         )}
