@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getContentBySlug, getAllSlugs } from '@/lib/mdx'
+import { mdxComponents } from '@/lib/mdx-components'
 import type { BlogPost } from '@/lib/types'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -139,7 +140,7 @@ export default async function BlogPostPage({
         )}
       </header>
       <div className="prose">
-        <MDXRemote source={post.content} />
+        <MDXRemote source={post.content} components={mdxComponents} />
       </div>
     </article>
   )
