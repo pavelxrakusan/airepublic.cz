@@ -1,0 +1,80 @@
+---
+title: "Skrytý Snake v blogu — jak jsem postavil hru za odpoledne"
+description: "Interaktivní Snake přímo v článku. Canvas API, swipe gesta, leaderboard přes Vercel Blob. Spusť si ho přímo tady."
+date: "2026-03-31"
+tags: ["projekt", "vibe coding", "hry", "Canvas API", "easter egg"]
+---
+
+Každý tech blog potřebuje easter egg. Tenhle má Snake.
+
+## Proč zrovna Snake
+
+Protože je jednoduchý na pochopení, těžký na zvládnutí a ideální na procvičení Canvas API. Plus — kdo nehrál Snake na Nokii?
+
+## Jak to funguje
+
+### Canvas rendering
+
+Celá hra běží na HTML5 Canvas — žádný DOM, žádné CSS animace. Herní pole je mřížka 20×20 buněk, had se pohybuje po buňkách, ne po pixelech.
+
+```ts
+// Game loop — každý tick posune hada o jedno pole
+const tick = () => {
+  const head = { ...snake[0] }
+  if (dir === 'UP') head.y--
+  if (dir === 'DOWN') head.y++
+
+  // Kolize se zdí nebo se sebou = game over
+  if (head.x < 0 || head.x >= GRID) return gameOver()
+  if (snake.some(s => s.x === head.x && s.y === head.y)) return gameOver()
+
+  snake.unshift(head)
+  if (head.x === food.x && head.y === food.y) {
+    score += 10
+    spawnFood()
+  } else {
+    snake.pop()
+  }
+}
+```
+
+### Ovládání na mobilu
+
+Na desktopu šipky, na mobilu swipe gesta. Detekce je jednoduchá — porovnám pozici prstu na `touchstart` a `touchend`:
+
+```ts
+const dx = touchEnd.x - touchStart.x
+const dy = touchEnd.y - touchStart.y
+
+if (Math.abs(dx) > Math.abs(dy)) {
+  // Horizontální swipe
+  direction = dx > 0 ? 'RIGHT' : 'LEFT'
+} else {
+  // Vertikální swipe
+  direction = dy > 0 ? 'DOWN' : 'UP'
+}
+```
+
+Hra běží ve fullscreen modalu, takže swipe nekoliduje se scrollem stránky.
+
+### Leaderboard
+
+Skóre se ukládá přes API do Vercel Blob — jednoduchý JSON soubor s top 10. Žádná databáze, žádný setup. Rate limit 1 zápis za minutu per IP, aby nikdo nespamoval.
+
+## Zkus to
+
+Otevři terminál a napiš `snake`:
+
+<SnakeTerminal />
+
+## Leaderboard — Top 10
+
+<SnakeLeaderboard />
+
+## Co jsem se naučil
+
+**Canvas API je překvapivě příjemný.** `requestAnimationFrame` + jednoduchý state machine = plynulá hra. Žádný framework, žádná knihovna.
+
+**Touch eventy nejsou složité.** Dva event listenery a trocha matematiky. Swipe detekce za 15 řádků kódu.
+
+**Vercel Blob je ideální pro small data.** JSON soubor s 10 záznamy? Perfektní use case. Žádný Postgres, žádný Redis.
