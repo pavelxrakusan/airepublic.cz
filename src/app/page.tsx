@@ -14,48 +14,74 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Hero — white section with particle animation + mascot */}
+      {/* ═══ Hero ═══ */}
       <section className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden bg-white">
-        <HeroParticles />
+        {/* Desktop: canvas particles */}
+        <div className="hidden sm:block">
+          <HeroParticles />
+        </div>
 
-        {/* Content layer */}
-        <div className="pointer-events-none relative z-10 flex flex-col items-center gap-6 px-6 pt-[60vh] sm:gap-8 sm:pt-[42vh]">
+        {/* Mobile hero: mascot is the star */}
+        <div className="flex flex-col items-center gap-4 px-6 pt-20 sm:hidden">
+          <PixelMascot scale={10} />
+          <h1
+            className="mt-2 bg-gradient-to-r from-[#11457E] via-[#999] to-[#D7141A] bg-clip-text text-center text-3xl font-black tracking-tight text-transparent"
+          >
+            airepublic.cz
+          </h1>
+        </div>
+
+        {/* Desktop content layer (below particle text) */}
+        <div className="pointer-events-none relative z-10 hidden flex-col items-center gap-8 px-6 pt-[42vh] sm:flex">
           {/* Subtitle */}
           <p
-            className="max-w-xl text-center text-lg leading-relaxed text-muted animate-fade-in-up sm:text-xl"
+            className="max-w-xl text-center text-xl leading-relaxed text-muted animate-fade-in-up"
             style={{ animationDelay: '1.5s' }}
           >
             Měsíc s&nbsp;Claudem a&nbsp;už si neumím představit život bez AI.
             Tady píšu o&nbsp;tom co testuji, co funguje a&nbsp;co je hype.
           </p>
 
-          {/* Mascot */}
-          <div className="animate-fade-in-up" style={{ animationDelay: '2.2s' }}>
-            <PixelMascot />
+          {/* Desktop mascot (smaller) */}
+          <div className="pointer-events-auto animate-fade-in-up" style={{ animationDelay: '2.2s' }}>
+            <PixelMascot scale={6} />
           </div>
 
           {/* Tech badges */}
-          <div
-            className="flex flex-wrap justify-center gap-2 animate-fade-in-up"
-            style={{ animationDelay: '2.6s' }}
-          >
-            {['Next.js 15', 'React 19', 'TypeScript', 'Tailwind v4', 'MDX', 'Vercel'].map(
-              (tech) => (
-                <span
-                  key={tech}
-                  className="rounded-full border border-border bg-white/80 px-3 py-1 font-mono text-xs text-muted backdrop-blur-sm"
-                >
-                  {tech}
-                </span>
-              ),
-            )}
+          <div className="flex flex-wrap justify-center gap-2 animate-fade-in-up" style={{ animationDelay: '2.6s' }}>
+            {['Next.js 15', 'React 19', 'TypeScript', 'Tailwind v4', 'MDX', 'Vercel'].map((tech) => (
+              <span
+                key={tech}
+                className="rounded-full border border-border bg-white/80 px-3 py-1 font-mono text-xs text-muted backdrop-blur-sm"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile subtitle + badges (below mascot) */}
+        <div className="flex flex-col items-center gap-4 px-6 pb-8 sm:hidden">
+          <p className="max-w-sm text-center text-base leading-relaxed text-muted">
+            Měsíc s&nbsp;Claudem a&nbsp;už si neumím představit život bez AI.
+            Tady píšu o&nbsp;tom co testuji, co funguje a&nbsp;co je hype.
+          </p>
+          <div className="flex flex-wrap justify-center gap-1.5">
+            {['Next.js 15', 'React 19', 'TypeScript', 'Tailwind v4'].map((tech) => (
+              <span
+                key={tech}
+                className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] text-muted"
+              >
+                {tech}
+              </span>
+            ))}
           </div>
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute inset-x-0 bottom-8 z-10 flex justify-center">
+        <div className="absolute inset-x-0 bottom-6 z-10 flex justify-center">
           <svg
-            className="h-6 w-6 text-muted/50 animate-scroll-bounce"
+            className="h-5 w-5 text-muted/40 animate-scroll-bounce"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -65,13 +91,11 @@ export default function HomePage() {
           </svg>
         </div>
 
-        {/* Subtle divider */}
         <div className="absolute inset-x-0 bottom-0 h-px bg-border" />
       </section>
 
-      {/* Content sections — light theme */}
+      {/* ═══ Content ═══ */}
       <div className="mx-auto max-w-5xl px-6 pb-16">
-        {/* Latest articles */}
         {posts.length > 0 && (
           <section className="mb-20 pt-12">
             <div className="mb-8 flex items-center justify-between">
@@ -88,7 +112,6 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* Latest tools */}
         {tools.length > 0 && (
           <section className="mb-20">
             <div className="mb-8 flex items-center justify-between">
@@ -105,7 +128,6 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* Projects */}
         {projects.length > 0 && (
           <section className="mb-20">
             <div className="mb-8 flex items-center justify-between">
