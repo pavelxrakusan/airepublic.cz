@@ -26,9 +26,9 @@ export default function AboutPage() {
           Celý život se pohybuji na pomezí designu a&nbsp;technologií. Prošel jsem
           reklamkami, novinami i&nbsp;fotografickou agenturou. Originálně jsem grafik,
           designér a&nbsp;fotograf — Adobe Creative Cloud je můj druhý domov. Nějakou
-          dobu jsem taky dělal elektronickou hudbu jako <strong>Pavel X Rakusan</strong> —
-          najdete mě na SoundCloudu i&nbsp;Beatportu. Produkoval jsem v&nbsp;Abletonu
-          a&nbsp;stále mě to občas chytne.
+          dobu jsem taky dělal elektronickou hudbu — produkoval jsem
+          v&nbsp;Abletonu, vyšlo mi pár věcí na SoundCloudu i&nbsp;Beatportu.
+          Kdo chce link, ať napíše. Stále mě to občas chytne.
         </p>
         <p>
           Dneska pracuji v&nbsp;neziskovém sektoru jako marketing expert. Zaměřujeme
