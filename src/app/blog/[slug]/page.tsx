@@ -4,6 +4,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getContentBySlug, getAllSlugs } from '@/lib/mdx'
 import type { BlogPost } from '@/lib/types'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function generateStaticParams() {
   return getAllSlugs('blog').map((slug) => ({ slug }))
@@ -58,6 +59,18 @@ export default async function BlogPostPage({
         <h1 className="mb-4 text-4xl font-bold tracking-tight">
           {post.frontmatter.title}
         </h1>
+        {post.frontmatter.image && (
+          <div className="relative mt-6 aspect-[2/1] overflow-hidden rounded-lg border border-border">
+            <Image
+              src={post.frontmatter.image}
+              alt={post.frontmatter.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 1024px"
+              priority
+            />
+          </div>
+        )}
         <div className="flex items-center gap-3 text-sm text-muted">
           <time dateTime={post.frontmatter.date}>
             {new Date(post.frontmatter.date).toLocaleDateString('cs-CZ', {

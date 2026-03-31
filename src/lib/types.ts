@@ -3,6 +3,7 @@ export interface BlogPost {
   description: string
   date: string
   tags: string[]
+  image?: string
 }
 
 export interface Tool {
@@ -24,6 +25,7 @@ export interface Project {
   githubUrl?: string
   liveUrl?: string
   status: 'hotovo' | 'rozpracovano' | 'planovano'
+  image?: string
 }
 
 export interface ContentItem<T> {
