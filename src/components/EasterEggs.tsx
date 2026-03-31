@@ -41,7 +41,7 @@ function MegaFirework({ onDone }: { onDone: () => void }) {
     ]
 
     for (const burst of bursts) {
-      const count = 50 + Math.floor(Math.random() * 30)
+      const count = 25 + Math.floor(Math.random() * 15)
       for (let i = 0; i < count; i++) {
         const angle = (i / count) * Math.PI * 2 + Math.random() * 0.3
         const speed = 80 + Math.random() * 200

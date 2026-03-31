@@ -22,19 +22,12 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
-  children,
-  modal,
-}: {
-  children: React.ReactNode
-  modal: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="cs" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <Navigation />
         <main>{children}</main>
-        {modal}
         <Footer />
         <FloatingMascot />
         <KonamiListener />

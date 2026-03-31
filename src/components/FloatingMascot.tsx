@@ -124,7 +124,7 @@ export function FloatingMascot() {
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) didDrag.current = true
     setPos({
       x: Math.max(0, dragOrigin.current.px - dx),
-      y: Math.max(0, dragOrigin.current.py + dy),
+      y: Math.max(0, dragOrigin.current.py - dy),
     })
   }, [isDragging])
 
