@@ -245,6 +245,46 @@ const SPARKLE: Grid = [
   [_,P,_],
 ]
 
+const BULB: Grid = [
+  [_,_,'#fbbf24',_,_],
+  [_,'#fbbf24','#fbbf24','#fbbf24',_],
+  [_,'#fbbf24','#fbbf24','#fbbf24',_],
+  [_,_,'#fbbf24',_,_],
+  [_,_,W,_,_],
+  [_,_,W,_,_],
+]
+
+const COFFEE: Grid = [
+  [_,W,_,_],
+  [L,L,L,L],
+  [L,B,B,L],
+  [L,B,B,L],
+  [L,L,L,_],
+]
+
+const NOTE: Grid = [
+  [_,P,_],
+  [P,_,_],
+  [_,_,P],
+  [_,P,_],
+]
+
+const ROCKET: Grid = [
+  [_,H,_],
+  [H,H,H],
+  [H,W,H],
+  [H,W,H],
+  ['#fbbf24','#fbbf24','#fbbf24'],
+]
+
+const BUG: Grid = [
+  [_,D,_,D,_],
+  [D,G,G,G,D],
+  [_,G,D,G,_],
+  [D,G,G,G,D],
+  [_,D,_,D,_],
+]
+
 /* ── Mirror helper (for buddy facing opposite direction) ── */
 function mirror(grid: Grid): Grid {
   return grid.map(row => [...row].reverse())
@@ -276,6 +316,7 @@ type Behavior =
   | 'idle' | 'wave' | 'look' | 'jump' | 'type'
   | 'sleep' | 'dance' | 'happy' | 'love' | 'spin'
   | 'think' | 'spawn' | 'chat' | 'handoff' | 'highfive' | 'celebrate'
+  | 'eureka' | 'coffee' | 'music' | 'deploy' | 'debug'
 
 // Buddy spawn: pixels gradually appear
 function makeSpawnFrames(): SceneFrame[] {
@@ -315,7 +356,7 @@ function makeSpawnFrames(): SceneFrame[] {
 }
 
 const DEFS: Record<Behavior, BehaviorDef> = {
-  idle:   { scenes: [{ main: IDLE }], frameMs: 1000, durationMs: 3000 },
+  idle:   { scenes: [{ main: IDLE }], frameMs: 1000, durationMs: 1200 },
   wave:   { scenes: [
     { main: WAVE_UP }, { main: WAVE_DOWN }, { main: WAVE_UP },
     { main: WAVE_DOWN }, { main: WAVE_UP }, { main: IDLE },
@@ -392,20 +433,68 @@ const DEFS: Record<Behavior, BehaviorDef> = {
     { main: HAPPY, buddy: mirror(HAPPY), accessory: { grid: SPARKLE, position: 'above' } },
     { main: IDLE, buddy: mirror(IDLE) },
   ], frameMs: 300, durationMs: 1800 },
+
+  // ── New solo behaviors ──
+  eureka: { scenes: [
+    { main: THINK },
+    { main: THINK, accessory: { grid: THOUGHT, position: 'above-right' } },
+    { main: THINK },
+    { main: HAPPY, accessory: { grid: BULB, position: 'above' } },
+    { main: HAPPY, accessory: { grid: BULB, position: 'above' } },
+    { main: DANCE_L, accessory: { grid: SPARKLE, position: 'above' } },
+    { main: DANCE_R },
+  ], frameMs: 350, durationMs: 2450 },
+  coffee: { scenes: [
+    { main: IDLE, accessory: { grid: COFFEE, position: 'above-right' } },
+    { main: BLINK, accessory: { grid: COFFEE, position: 'above-right' } },
+    { main: IDLE, accessory: { grid: COFFEE, position: 'above-right' } },
+    { main: HAPPY, accessory: { grid: COFFEE, position: 'above-right' } },
+    { main: HAPPY },
+  ], frameMs: 500, durationMs: 2500 },
+  music: { scenes: [
+    { main: DANCE_L, accessory: { grid: NOTE, position: 'above' } },
+    { main: DANCE_R, accessory: { grid: NOTE, position: 'above-right' } },
+    { main: DANCE_L, accessory: { grid: NOTE, position: 'above' } },
+    { main: DANCE_R, accessory: { grid: NOTE, position: 'above-right' } },
+    { main: DANCE_L, accessory: { grid: NOTE, position: 'above' } },
+    { main: DANCE_R, accessory: { grid: NOTE, position: 'above-right' } },
+    { main: DANCE_L, accessory: { grid: NOTE, position: 'above' } },
+    { main: DANCE_R, accessory: { grid: HEART, position: 'above' } },
+  ], frameMs: 250, durationMs: 2000 },
+  deploy: { scenes: [
+    { main: TYPE_L, laptop: true },
+    { main: TYPE_R, laptop: true },
+    { main: TYPE_L, laptop: true },
+    { main: HAPPY, accessory: { grid: ROCKET, position: 'above' } },
+    { main: HAPPY, accessory: { grid: ROCKET, position: 'above' } },
+    { main: DANCE_L, accessory: { grid: SPARKLE, position: 'above' } },
+  ], frameMs: 350, durationMs: 2100 },
+  debug: { scenes: [
+    { main: LOOK_LEFT, accessory: { grid: BUG, position: 'above-right' } },
+    { main: LOOK_RIGHT, accessory: { grid: BUG, position: 'above-right' } },
+    { main: THINK, accessory: { grid: BUG, position: 'above-right' } },
+    { main: THINK },
+    { main: JUMP_CROUCH, accessory: { grid: BUG, position: 'above' } },
+    { main: HAPPY, accessory: { grid: SPARKLE, position: 'above' } },
+    { main: HAPPY },
+  ], frameMs: 350, durationMs: 2450 },
 }
 
 const AUTO_SEQ: Behavior[] = [
-  'idle', 'wave', 'idle', 'look', 'idle', 'type',
-  'idle', 'think', 'idle', 'spawn',
-  'idle', 'chat', 'idle', 'dance',
-  'idle', 'handoff', 'idle', 'sleep',
-  'idle', 'highfive', 'idle', 'jump',
-  'idle', 'celebrate',
+  'wave', 'idle', 'type', 'coffee',
+  'look', 'think', 'eureka',
+  'idle', 'spawn', 'chat', 'handoff',
+  'dance', 'music', 'idle',
+  'debug', 'happy', 'jump',
+  'deploy', 'celebrate',
+  'idle', 'sleep', 'idle',
+  'look', 'type', 'think', 'highfive',
+  'wave', 'love', 'spin', 'dance',
 ]
 
 const TAP_REACTIONS: Behavior[] = [
   'happy', 'love', 'jump', 'dance', 'wave', 'spin',
-  'spawn', 'highfive', 'celebrate',
+  'spawn', 'highfive', 'celebrate', 'eureka', 'music', 'deploy',
 ]
 
 /* ═══════════════════════════════════════════════════════
