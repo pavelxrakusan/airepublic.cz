@@ -12,10 +12,16 @@ export default function SnakeLeaderboard() {
   const [scores, setScores] = useState<ScoreEntry[] | null>(null);
 
   useEffect(() => {
-    fetch('/api/snake-scores')
-      .then((res) => res.json())
-      .then((data) => setScores(data))
-      .catch(() => setScores([]));
+    const loadScores = () =>
+      fetch('/api/snake-scores')
+        .then((res) => res.json())
+        .then((data) => setScores(data))
+        .catch(() => setScores([]));
+
+    loadScores();
+
+    window.addEventListener('snake-score-updated', loadScores);
+    return () => window.removeEventListener('snake-score-updated', loadScores);
   }, []);
 
   if (scores === null) {

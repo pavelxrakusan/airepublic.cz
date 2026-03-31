@@ -150,6 +150,7 @@ export default function SnakeTerminal() {
       })
       if (res.ok) {
         addLine(`Skóre ${gameOverScore} uloženo jako '${trimmedName}'!`, 'success')
+        window.dispatchEvent(new Event('snake-score-updated'))
       } else {
         addLine('Chyba při ukládání skóre.', 'error')
       }
