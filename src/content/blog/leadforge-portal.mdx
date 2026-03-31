@@ -1,6 +1,6 @@
 ---
 title: "LeadForge portál: Next.js + AI asistent pro B2B data"
-description: "Frontend pro 17 000 SVJ záznamů — Next.js, Neon databáze, Railway hosting, Claude chatbot, magic link auth a signálové badges. Architektura portálu leadforge.cz."
+description: "Frontend pro 17 013 SVJ záznamů — Next.js, Railway hosting, Claude chatbot, magic link auth a signálové badges. Architektura portálu leadforge.cz."
 date: "2026-03-19"
 tags: ["Next.js", "projekt", "AI integrace", "Neon", "Railway"]
 image: "/images/blog/leadforge-portal.png"
@@ -15,17 +15,18 @@ Tak vznikl **leadforge.cz**.
 | Vrstva | Technologie |
 |--------|------------|
 | Frontend | Next.js (App Router) |
-| Databáze | Neon (serverless Postgres) |
+| Data | CSV (PapaParse) |
+| Databáze | Neon (user management, auth) |
 | Hosting | Railway |
 | AI | Claude API (Anthropic) |
 | Auth | Magic link (email) |
-| Email | Brevo API |
+| Email | Resend |
 
-Žádný Vercel tentokrát — Railway mi dává víc kontroly nad serverem a persistent storage. Neon jako databáze, protože serverless Postgres škáluje s load a branching je skvělý pro development.
+Žádný Vercel tentokrát — Railway je jednodušší na deployment, má persistent storage pro CSV data a nižší cenu pro single-app projekt. Neon slouží pro user management a autentizaci, SVJ data běží přes CSV parsované in-memory přes PapaParse.
 
 ## Filtrování a vyhledávání
 
-Hlavní obrazovka portálu je tabulka s filtry. 17 665 záznamů musí být prohledávatelných za milisekundy.
+Hlavní obrazovka portálu je tabulka s filtry. 17 013 záznamů musí být prohledávatelných za milisekundy.
 
 **Filtry:**
 - **Region** — kraj, okres, město
@@ -35,30 +36,29 @@ Hlavní obrazovka portálu je tabulka s filtry. 17 665 záznamů musí být proh
 - **Správce** — vlastní výbor / externí správce
 - **Signály** — nově založené, velké, problémové
 
-Filtry jsou server-side (Neon query) s URL-based state — sdílitelné odkazy na konkrétní filtraci. Žádný client-side filtering na 17k záznamech.
+Filtry jsou in-memory (CSV parsovaný přes PapaParse) s URL-based state — sdílitelné odkazy na konkrétní filtraci. Neon se používá jen pro user management a auth, ne pro SVJ data.
 
 ## Signálové badges
 
 Každé SVJ má barevné badges, co na první pohled řeknou kvalitu leadu:
 
-- 🟢 **Kontakt ověřen** — email z 2+ zdrojů
-- 🔵 **Velké SVJ** — 50+ bytů
-- 🟡 **Nové SVJ** — založeno v posledních 2 letech
+- 🟢 **E-mail ověřen** — MX validovaný email
+- 🔵 **X bytů** — počet bytových jednotek
+- 🟣 **X podlaží** — počet podlaží budovy
 - 🔴 **Exekuce** — aktivní exekuční řízení
-- ⚪ **Externí správce** — řídí správcovská firma
+- 🟠 **Insolvence** — probíhající insolvence
 
-Prodejce vidí na první pohled: zelené + modré = kvalitní lead. Červené = pozor. Jednoduché, vizuální, efektivní.
+Prodejce vidí na první pohled: zelené + modré = kvalitní lead. Červené/oranžové = pozor. Jednoduché, vizuální, efektivní.
 
 ## AI asistent
 
-Chatbot přímo v portálu — Claude API s kontextem dat. Můžeš se zeptat:
+Chatbot přímo v portálu — Claude API s kontextem o SVJ datech. Obecný AI asistent, který rozumí struktuře datasetu. Můžeš se zeptat:
 
 - "Najdi SVJ v Praze 6 s víc než 100 byty a emailem"
-- "Kolik SVJ v Brně má exekuci?"
-- "Shrň mi tohle SVJ" (na detail stránce)
+- "Kolik SVJ ve Středočeském kraji má exekuci?"
 - "Jaké SVJ bys doporučil pro nabídku zateplení?"
 
-Claude vidí strukturu dat a generuje SQL-like dotazy, které se přeloží na reálné filtry. Odpovídá přirozeně — ne jako databázový terminál.
+Claude odpovídá přirozeně na základě kontextu o datech — ne jako databázový terminál.
 
 Tohle je ta feature, kvůli které lidi zůstávají. Místo klikání na filtry prostě řekneš co chceš.
 
@@ -71,7 +71,7 @@ Proč magic link?
 - **Bezpečnější** — žádná hesla k ukradení
 - **Jednodušší implementace** — žádné forgot password flow
 
-Brevo API posílá emaily. Fallback na SMTP pokud Brevo nefunguje.
+Resend posílá emaily s magic linkem.
 
 ## Detail SVJ
 
@@ -79,14 +79,12 @@ Každý záznam má detail stránku s:
 
 - **Základní info** — název, IČO, adresa, datum vzniku
 - **Kontakty** — předseda, email, telefon, web (s confidence score)
-- **Signály** — badges, exekuce, počet bytů
-- **Mapa** — poloha z RÚIAN
-- **Historie** — kdy byl záznam naposledy aktualizován
-- **AI shrnutí** — Claude vygeneruje jednořádkové shrnutí z dat
+- **Kontaktní profily** — nově: každé SVJ zobrazuje kontaktní karty s více osobami — vedení SVJ, správce, další kontakty. U každého kontaktu je badge důvěryhodnosti a zdroj odkud data pocházejí.
+- **Signály** — badges, exekuce, insolvence, počet bytů a podlaží
 
 ## Co funguje
 
-**Rychlost.** Neon Postgres s indexy na všechny filtrované sloupce. Filtrovaný dotaz na 17k záznamech: pod 50ms. Stránka se renderuje server-side, žádné loading spinnery na hlavním obsahu.
+**Rychlost.** In-memory filtrování přes PapaParse je bleskové. Stránka se renderuje server-side, žádné loading spinnery na hlavním obsahu.
 
 **UX.** Prodejce přijde, vyfiltruje si cílovou skupinu, exportne kontakty, osloví. Celý flow: 2 minuty. Dřív: hodiny googlování.
 
@@ -96,19 +94,19 @@ Každý záznam má detail stránku s:
 
 Portál je **funkční ale rozpracovaný**. Co zbývá:
 
-- **Validace dat** — probíhá čištění a křížová kontrola. 17k záznamů, spousta edge cases.
+- **Validace dat** — probíhá čištění a křížová kontrola. 17 013 záznamů, spousta edge cases.
 - **Stripe integrace** — platební brána pro přístup k placeným datům. Free tier ukáže strukturu, platící zákazník vidí kontakty.
 - **Rozšíření regionů** — teď Praha a Středočeský kraj. Celá ČR je na roadmapě.
 
 ## Co dál
 
-**White-label.** Portál je připravený na multi-tenant — každý zákazník vidí jen svůj segment dat. Logo, barvy, doména — vše konfigurovatelné.
+**White-label (plán do budoucna).** Portál by mohl podporovat multi-tenant — každý zákazník by viděl jen svůj segment dat. Logo, barvy, doména — vše konfigurovatelné. Zatím ve fázi návrhu.
 
 **Automatické aktualizace.** Pipeline teď běží manuálně (batch). Cíl: automatický re-scrape jednou týdně + detekce změn (nový předseda, nová exekuce).
 
 ## Technické rozhodnutí
 
-**Proč Railway místo Vercel?** Potřebuji persistent server pro pipeline scripty, cron joby a delší běhy. Vercel je skvělý na Next.js frontend, ale pro backend pipeline s Scrapy je Railway lepší fit.
+**Proč Railway místo Vercel?** Pipeline běží lokálně na Macu, ne na Railway. Railway hostuje jen Next.js portál. Důvod: jednodušší deployment, persistent storage pro CSV data, nižší cena než Vercel pro single-app projekt.
 
 **Proč Neon místo Supabase?** Neon je čistý Postgres bez přidané magie. Branching pro development, serverless scaling, žádný vendor lock-in. Supabase by přidal auth a storage, ale magic link jsem implementoval sám za odpoledne.
 

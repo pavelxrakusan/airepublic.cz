@@ -1,6 +1,6 @@
 ---
 title: "Jak jsem s AI nasbíral 17 000 SVJ — architektura LeadForge"
-description: "Python pipeline, 7 scraperů, 10+ datových zdrojů a enrichment engine co z veřejných registrů vytáhne kontakty na předsedy SVJ. Tady je jak to celé funguje."
+description: "Python pipeline, 10+ scraperů, 10+ datových zdrojů a enrichment engine co z veřejných registrů vytáhne kontakty na předsedy SVJ. Tady je jak to celé funguje."
 date: "2026-03-18"
 tags: ["Python", "lead generation", "projekt", "workflow", "AI integrace", "scraping"]
 image: "/images/blog/leadforge-architektura.png"
@@ -8,7 +8,7 @@ image: "/images/blog/leadforge-architektura.png"
 
 SVJ trh je neprůhledný. Kontakty na předsedy společenství vlastníků nejsou nikde veřejně. Správcovské firmy si data střeží. A pokud chcete oslovit SVJ s nabídkou — rekonstrukce, pojištění, správa — musíte nejdřív zjistit kdo tam vůbec rozhoduje.
 
-Tak jsem to zjistil. Zatím pro 17 665 SVJ v Praze a Středočeském kraji. Zbytek ČR je na roadmapě.
+Tak jsem to zjistil. Zatím pro 17 013 SVJ v Praze a Středočeském kraji (po vyčištění 237 duplicit a 415 záznamů bez IČO). Zbytek ČR je na roadmapě.
 
 ## Problém
 
@@ -23,7 +23,7 @@ Ruční hledání jednoho SVJ: 10-15 minut. Pro tisíce? Nemožné.
 
 ## Pivot moment
 
-Začal jsem s justice.cz. Napsal scraper, stáhl všechna SVJ. Výsledek: 17 665 záznamů, ale email jen u 2 900. To je 16.5 %. Na lead-gen nepoužitelné.
+Začal jsem s justice.cz. Napsal scraper, stáhl všechna SVJ. Výsledek: 17 013 záznamů (po čištění), ale email jen u 2 900. To je 16.5 %. Na lead-gen nepoužitelné.
 
 Claude mi řekl: "Proč hledáš na jednom místě? Zkombinuj víc zdrojů."
 
@@ -36,9 +36,11 @@ LeadForge je pipeline — sekvence scraperů, kde výstup jednoho je vstup dalš
 ```
 ARES (IČO, adresa, datum vzniku)
   ↓
+ARES VR (rejstříkové údaje, datové schránky)
+  ↓
 justice.cz (rejstřík, předseda, email, telefon)
   ↓
-RÚIAN (geolokace, katastrální území)
+RÚIAN (počet bytů, podlaží, zastavěná plocha)
   ↓
 Google Search (web SVJ, kontaktní stránky)
   ↓
@@ -46,7 +48,7 @@ WebDomu.cz (správcovské firmy, další kontakty)
   ↓
 Weby SVJ (scraping kontaktních stránek)
   ↓
-Datové schránky (ověření existence)
+InfoPraha, správcovské firmy, firmy.cz ...
   ↓
 ═══ ENRICHMENT ═══
   ↓
@@ -54,12 +56,14 @@ Exekuční rejstřík (finanční zdraví)
   ↓
 Bytové jednotky (RÚIAN, počet bytů)
   ↓
-Křížová kontrola (deduplikace, scoring)
+Kontaktní profily (křížová kontrola osob)
+  ↓
+Deduplikace a scoring
 ```
 
-Každý scraper je nezávislý modul v Pythonu (Scrapy). Výstupy se mergeují do centrální databáze. Enrichment běží jako druhá fáze — přidává kontextová data, která nemají přímý zdroj.
+Každý scraper je nezávislý modul v Pythonu (requests + BeautifulSoup). Výstupy se mergeují do centrální databáze. Enrichment běží jako druhá fáze — přidává kontextová data, která nemají přímý zdroj.
 
-## 7 scraperů v detailu
+## 10+ scraperů v detailu
 
 ### 1. ARES (Administrativní registr ekonomických subjektů)
 
@@ -79,15 +83,19 @@ Portál pro správu SVJ. Scrapuju profily SVJ — kontakty na správce, dokument
 
 ### 5. Weby SVJ
 
-Pokud Google najde web SVJ, scrapnu kontaktní stránku. Email, telefon, jméno kontaktní osoby. Regex + Claude pro extrakci z nestrukturovaného textu.
+Pokud Google najde web SVJ, scrapnu kontaktní stránku. Email, telefon, jméno kontaktní osoby. Regex extrakce z nestrukturovaného HTML.
 
 ### 6. RÚIAN (Registr územní identifikace)
 
-Geolokace adres — GPS souřadnice, katastrální území, městská část. Plus počet bytových jednotek na adrese.
+Údaje o budově — počet bytů, podlaží, zastavěná plocha. SVJ s 200 byty je úplně jiný lead než SVJ s 8 byty.
 
-### 7. Datové schránky
+### 7. ARES VR (Veřejný rejstřík přes ARES)
 
-Ověření, že SVJ má aktivní datovou schránku. Indikátor fungujícího subjektu.
+Enrichment rejstříkových údajů — včetně datových schránek. Datové schránky nejsou samostatný scraper, jsou součástí ARES VR volání (`enrich_ares_vr.py`).
+
+### 8–10+. Další zdroje
+
+InfoPraha, správcovské firmy (scrape_spravcovske), firmy.cz, weby z vyhledávání (scrape_web_praha, scrape_search_sc, scrape_svj_webs) — celkem 10+ scraperů pokrývajících různé kombinace regionů a datových zdrojů.
 
 ## Enrichment: kde vzniká hodnota
 
@@ -108,6 +116,8 @@ Křížová kontrola kontaktů z multiple zdrojů:
 - Telefon jen z Google → nízká důvěra
 - Předseda z rejstříku + email z webu → spojím do profilu
 
+Každé SVJ může mít více kontaktních osob — předseda, místopředseda, účetní, správce. Systém křížově ověřuje jména z justice.cz s kontakty z webů SVJ a přiřazuje úroveň důvěryhodnosti (nejvyšší / vysoká / střední).
+
 Výsledek: confidence score pro každý kontakt. Prodejce ví, jak moc si může být jistý.
 
 ### Detekce správců
@@ -118,12 +128,14 @@ Pokud SVJ řídí správcovská firma (ne vlastní výbor), detekuji to. Jiný t
 
 | Metrika | Hodnota |
 |---------|---------|
-| SVJ celkem | 17 665 |
-| Emailové kontakty | 3 000+ |
-| SVJ s exekucí | 1 543 (8.7 %) |
+| SVJ celkem | 17 013 |
+| Emaily (MX ověřené) | 412 |
+| Telefony | 797 |
+| Kontaktní profily | 3 142 |
+| SVJ s exekucí | 1 543 (9.1 %) |
 | Bytové jednotky | 474 410 |
 | Datové zdroje | 10+ |
-| Scraperů | 7 |
+| Scraperů | 10+ |
 
 ## Kde jsme teď
 
@@ -131,15 +143,15 @@ Projekt je **rozpracovaný** — data pro Prahu a Středočeský kraj jsou kompl
 
 ## Co jsem se naučil
 
-**1. Jeden zdroj nestačí.** Justice.cz dala 16.5 % emailů. Multi-source přístup dal 3×. Každý další zdroj přidává marginálně — ale v součtu je to dramatický rozdíl.
+**1. Jeden zdroj nestačí.** Justice.cz dala 16.5 % emailů. Multi-source přístup přidal stovky dalších kontaktů. Každý další zdroj přidává marginálně — ale v součtu je to dramatický rozdíl.
 
 **2. Data quality > data quantity.** Mít 17 000 SVJ bez kontaktů je k ničemu. Mít 5 000 s ověřeným emailem a jménem předsedy je poklad.
 
-**3. Claude jako data engineer.** Extrakce kontaktů z nestrukturovaných webů, klasifikace typů SVJ, generování shrnutí — Claude se hodí na fáze, kde regex končí a NLP začíná.
+**3. Regex zvládne víc, než čekáte.** Extrakce kontaktů z nestrukturovaných webů běží přes regex — bez LLM. Claude pomáhá s architekturou pipeline a řešením edge cases, ne s runtime scrapingem.
 
 **4. Veřejné registry jsou poklad.** ARES, justice.cz, RÚIAN, datové schránky — všechno veřejně dostupné, legální, a v kombinaci neuvěřitelně hodnotné.
 
-**5. Validace dat je větší práce než sběr.** Nasbírat 17k záznamů trvalo dny. Vyčistit, deduplikovat a ověřit je — trvá týdny. A nikdy to není "hotové."
+**5. Validace dat je větší práce než sběr.** Nasbírat 17k záznamů trvalo dny. Vyčistit, deduplikovat a ověřit je — trvá týdny. Z původních 17 665 zůstalo 17 013 po vyřazení duplicit a záznamů bez IČO. A nikdy to není "hotové."
 
 ## Portál
 
