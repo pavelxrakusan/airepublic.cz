@@ -40,7 +40,7 @@ export default function AboutPage() {
         <h2>Kontakt</h2>
         <p>
           Máte dotaz nebo nápad na spolupráci? Napište mi na{' '}
-          <a href="mailto:info@airepublic.cz">info@airepublic.cz</a>.
+          <a href="mailto:pavel@leadforge.cz">pavel@leadforge.cz</a>.
         </p>
       </div>
     </div>
