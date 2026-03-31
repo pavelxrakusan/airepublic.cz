@@ -20,16 +20,13 @@ interface Particle {
 
 /* ── Helpers ────────────────────────────────────────────── */
 
-/** Map a relative (0-1) position inside text bounds to a Czech-flag colour. */
 function getCzFlagColor(rx: number, ry: number): string {
-  // Blue wedge on the left (triangle: (0,0)→(0,1)→(0.5,0.5))
   const triW = 0.5
   if (rx < triW) {
     const topEdge = (rx / triW) * 0.5
     const botEdge = 1 - topEdge
     if (ry >= topEdge && ry <= botEdge) return CZ_BLUE
   }
-  // Upper half = light gray, lower half = red
   return ry < 0.5 ? CZ_GRAY : CZ_RED
 }
 
@@ -40,16 +37,8 @@ function makeOffscreen(w: number, h: number): CanvasRenderingContext2D {
   return c.getContext('2d')!
 }
 
-function findBounds(
-  data: Uint8ClampedArray,
-  w: number,
-  h: number,
-  gap: number,
-) {
-  let x0 = w
-  let y0 = h
-  let x1 = 0
-  let y1 = 0
+function findBounds(data: Uint8ClampedArray, w: number, h: number, gap: number) {
+  let x0 = w, y0 = h, x1 = 0, y1 = 0
   for (let y = 0; y < h; y += gap) {
     for (let x = 0; x < w; x += gap) {
       if (data[(y * w + x) * 4 + 3] > 128) {
@@ -63,6 +52,15 @@ function findBounds(
   return { x0, y0, x1: Math.max(x1, x0 + 1), y1: Math.max(y1, y0 + 1) }
 }
 
+/**
+ * Build a font string that works reliably on mobile.
+ * Mobile Safari sometimes ignores custom fonts on offscreen canvas,
+ * so we use a robust system font stack as fallback.
+ */
+function getCanvasFont(size: number): string {
+  return `900 ${size}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`
+}
+
 /* ── Component ──────────────────────────────────────────── */
 export function HeroParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -70,6 +68,7 @@ export function HeroParticles() {
   const particlesRef = useRef<Particle[]>([])
   const rafRef = useRef(0)
   const dimsRef = useRef({ w: 0, h: 0, dpr: 1 })
+  const loopStarted = useRef(false)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -83,6 +82,7 @@ export function HeroParticles() {
       const rect = canvas!.getBoundingClientRect()
       const w = rect.width
       const h = rect.height
+      if (w === 0 || h === 0) return // not visible yet
       canvas!.width = w * dpr
       canvas!.height = h * dpr
       dimsRef.current = { w, h, dpr }
@@ -95,20 +95,18 @@ export function HeroParticles() {
       const gap = isMobile ? 3 : 2
 
       const oc = makeOffscreen(w, h)
-      const fontFamily = getComputedStyle(document.body).fontFamily
       oc.fillStyle = '#000'
       oc.textAlign = 'center'
       oc.textBaseline = 'middle'
 
       if (isMobile) {
-        // Two lines on mobile so it fits
         const fontSize = Math.min(w * 0.12, 44)
-        oc.font = `900 ${fontSize}px ${fontFamily}`
+        oc.font = getCanvasFont(fontSize)
         oc.fillText('airepublic', w / 2, h * 0.42)
         oc.fillText('.cz', w / 2, h * 0.42 + fontSize * 1.15)
       } else {
         const fontSize = Math.min(w * 0.11, 120)
-        oc.font = `900 ${fontSize}px ${fontFamily}`
+        oc.font = getCanvasFont(fontSize)
         oc.fillText('airepublic.cz', w / 2, h / 2)
       }
 
@@ -133,6 +131,12 @@ export function HeroParticles() {
             })
           }
         }
+      }
+
+      // If no particles were generated (font issue), retry after delay
+      if (particles.length === 0) {
+        setTimeout(setup, 300)
+        return
       }
 
       particlesRef.current = particles
@@ -176,10 +180,24 @@ export function HeroParticles() {
       mouseRef.current = { x: -9999, y: -9999 }
     }
 
+    function startLoop() {
+      if (!loopStarted.current) {
+        loopStarted.current = true
+        rafRef.current = requestAnimationFrame(loop)
+      }
+    }
+
+    // Try immediately with system fonts (always available)
+    setup()
+    startLoop()
+
+    // Retry once fonts are loaded (might improve rendering)
     document.fonts.ready.then(() => {
       setup()
-      rafRef.current = requestAnimationFrame(loop)
     })
+
+    // Extra retry for slow mobile connections
+    setTimeout(setup, 800)
 
     canvas.addEventListener('pointermove', onPointerMove)
     canvas.addEventListener('pointerleave', onPointerLeave)
@@ -187,6 +205,7 @@ export function HeroParticles() {
 
     return () => {
       cancelAnimationFrame(rafRef.current)
+      loopStarted.current = false
       canvas.removeEventListener('pointermove', onPointerMove)
       canvas.removeEventListener('pointerleave', onPointerLeave)
       window.removeEventListener('resize', setup)
