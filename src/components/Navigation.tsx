@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
+import { DarkModeToggle } from './EasterEggs'
 
 const links = [
   { href: '/', label: 'Domů' },
@@ -26,23 +27,26 @@ export function Navigation() {
         </Link>
 
         {/* Desktop nav */}
-        <ul className="hidden items-center gap-1 sm:flex">
-          {links.map(({ href, label }) => {
-            const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href)
-            return (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
-                    isActive ? 'text-foreground' : 'text-muted hover:text-foreground'
-                  }`}
-                >
-                  {label}
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
+        <div className="hidden items-center gap-1 sm:flex">
+          <ul className="flex items-center gap-1">
+            {links.map(({ href, label }) => {
+              const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href)
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
+                      isActive ? 'text-foreground' : 'text-muted hover:text-foreground'
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+          <DarkModeToggle />
+        </div>
 
         {/* Mobile hamburger */}
         <button

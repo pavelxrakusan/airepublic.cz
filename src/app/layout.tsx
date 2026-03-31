@@ -3,6 +3,8 @@ import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { Navigation } from '@/components/Navigation'
 import { Footer } from '@/components/Footer'
+import { FloatingMascot } from '@/components/FloatingMascot'
+import { KonamiListener } from '@/components/EasterEggs'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -27,6 +29,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navigation />
         <main>{children}</main>
         <Footer />
+        <FloatingMascot />
+        <KonamiListener />
       </body>
     </html>
   )
