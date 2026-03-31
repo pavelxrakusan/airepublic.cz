@@ -1,0 +1,145 @@
+---
+title: "Jak jsem s AI nasbíral 17 000 SVJ — architektura LeadForge"
+description: "Python pipeline, 7 scraperů, 10+ datových zdrojů a enrichment engine co z veřejných registrů vytáhne kontakty na předsedy SVJ. Tady je jak to celé funguje."
+date: "2026-03-18"
+tags: ["Python", "lead generation", "projekt", "workflow", "AI integrace", "scraping"]
+---
+
+SVJ trh je neprůhledný. Kontakty na předsedy společenství vlastníků nejsou nikde veřejně. Správcovské firmy si data střeží. A pokud chcete oslovit SVJ s nabídkou — rekonstrukce, pojištění, správa — musíte nejdřív zjistit kdo tam vůbec rozhoduje.
+
+Tak jsem to zjistil. Zatím pro 17 665 SVJ v Praze a Středočeském kraji. Zbytek ČR je na roadmapě.
+
+## Problém
+
+Představte si, že prodáváte službu pro bytové domy. Potřebujete kontaktovat předsedu SVJ. Kde ho najdete?
+
+- **Justice.cz** — rejstřík SVJ existuje, ale emaily má jen ~16.5 % záznamů
+- **ARES** — obchodní rejstřík, IČO a adresa, ale žádné kontakty
+- **Google** — občas najdete web SVJ, občas ne
+- **Nikde centrálně** — neexistuje databáze "všechna SVJ s kontakty"
+
+Ruční hledání jednoho SVJ: 10-15 minut. Pro tisíce? Nemožné.
+
+## Pivot moment
+
+Začal jsem s justice.cz. Napsal scraper, stáhl všechna SVJ. Výsledek: 17 665 záznamů, ale email jen u 2 900. To je 16.5 %. Na lead-gen nepoužitelné.
+
+Claude mi řekl: "Proč hledáš na jednom místě? Zkombinuj víc zdrojů."
+
+A tím to začalo.
+
+## Pipeline architektura
+
+LeadForge je pipeline — sekvence scraperů, kde výstup jednoho je vstup dalšího. Každý zdroj přidá kousek informace.
+
+```
+ARES (IČO, adresa, datum vzniku)
+  ↓
+justice.cz (rejstřík, předseda, email, telefon)
+  ↓
+RÚIAN (geolokace, katastrální území)
+  ↓
+Google Search (web SVJ, kontaktní stránky)
+  ↓
+WebDomu.cz (správcovské firmy, další kontakty)
+  ↓
+Weby SVJ (scraping kontaktních stránek)
+  ↓
+Datové schránky (ověření existence)
+  ↓
+═══ ENRICHMENT ═══
+  ↓
+Exekuční rejstřík (finanční zdraví)
+  ↓
+Bytové jednotky (RÚIAN, počet bytů)
+  ↓
+Křížová kontrola (deduplikace, scoring)
+```
+
+Každý scraper je nezávislý modul v Pythonu (Scrapy). Výstupy se mergeují do centrální databáze. Enrichment běží jako druhá fáze — přidává kontextová data, která nemají přímý zdroj.
+
+## 7 scraperů v detailu
+
+### 1. ARES (Administrativní registr ekonomických subjektů)
+
+API volání na všechna IČO s právní formou SVJ. Vrací: název, IČO, adresa sídla, datum vzniku. Základ celého datasetu.
+
+### 2. Justice.cz (Veřejný rejstřík)
+
+Scraping rejstříkových výpisů. Extrahuji: jméno předsedy, členy výboru, email, telefon, datovou schránku. Tady je těch 16.5 % emailů — ale taky jména předsedů, což je zlato.
+
+### 3. Google Search
+
+Pro každé SVJ hledám `"SVJ [adresa]" kontakt email`. Překvapivě efektivní — hodně SVJ má jednoduchou webovku nebo stránku na WebDomu.
+
+### 4. WebDomu.cz
+
+Portál pro správu SVJ. Scrapuju profily SVJ — kontakty na správce, dokumenty, aktuality. Detekce správcovských firem (pokud SVJ řídí externí správce, je to jiný typ leadu).
+
+### 5. Weby SVJ
+
+Pokud Google najde web SVJ, scrapnu kontaktní stránku. Email, telefon, jméno kontaktní osoby. Regex + Claude pro extrakci z nestrukturovaného textu.
+
+### 6. RÚIAN (Registr územní identifikace)
+
+Geolokace adres — GPS souřadnice, katastrální území, městská část. Plus počet bytových jednotek na adrese.
+
+### 7. Datové schránky
+
+Ověření, že SVJ má aktivní datovou schránku. Indikátor fungujícího subjektu.
+
+## Enrichment: kde vzniká hodnota
+
+Surová data ze scraperů jsou základ. Enrichment je to, co z nich dělá prodejní nástroj.
+
+### Exekuce
+
+Křížová kontrola IČO proti exekučnímu rejstříku. SVJ s exekucí = problém. SVJ bez exekuce a s velkým počtem bytů = kvalitní lead. Našli jsme **1 543 SVJ s exekucí** — to je 8.7 %. Důležitý signál pro risk assessment.
+
+### Bytové jednotky
+
+Z RÚIAN vytáhnu počet bytů na adrese. SVJ s 200 byty je úplně jiný lead než SVJ s 8 byty. Celkem: **474 410 bytových jednotek** v datasetu.
+
+### Kontaktní profily
+
+Křížová kontrola kontaktů z multiple zdrojů:
+- Stejný email z justice.cz i webu SVJ → vysoká důvěra
+- Telefon jen z Google → nízká důvěra
+- Předseda z rejstříku + email z webu → spojím do profilu
+
+Výsledek: confidence score pro každý kontakt. Prodejce ví, jak moc si může být jistý.
+
+### Detekce správců
+
+Pokud SVJ řídí správcovská firma (ne vlastní výbor), detekuji to. Jiný typ leadu — oslovuješ firmu, ne předsedu. Pattern matching na názvy známých správcovských firem + heuristiky.
+
+## Čísla
+
+| Metrika | Hodnota |
+|---------|---------|
+| SVJ celkem | 17 665 |
+| Emailové kontakty | 3 000+ |
+| SVJ s exekucí | 1 543 (8.7 %) |
+| Bytové jednotky | 474 410 |
+| Datové zdroje | 10+ |
+| Scraperů | 7 |
+
+## Kde jsme teď
+
+Projekt je **rozpracovaný** — data pro Prahu a Středočeský kraj jsou kompletní, probíhá validace a čištění. Na roadmapě: rozšíření na celou ČR a platební brána přes Stripe pro přístup k placeným datům.
+
+## Co jsem se naučil
+
+**1. Jeden zdroj nestačí.** Justice.cz dala 16.5 % emailů. Multi-source přístup dal 3×. Každý další zdroj přidává marginálně — ale v součtu je to dramatický rozdíl.
+
+**2. Data quality > data quantity.** Mít 17 000 SVJ bez kontaktů je k ničemu. Mít 5 000 s ověřeným emailem a jménem předsedy je poklad.
+
+**3. Claude jako data engineer.** Extrakce kontaktů z nestrukturovaných webů, klasifikace typů SVJ, generování shrnutí — Claude se hodí na fáze, kde regex končí a NLP začíná.
+
+**4. Veřejné registry jsou poklad.** ARES, justice.cz, RÚIAN, datové schránky — všechno veřejně dostupné, legální, a v kombinaci neuvěřitelně hodnotné.
+
+**5. Validace dat je větší práce než sběr.** Nasbírat 17k záznamů trvalo dny. Vyčistit, deduplikovat a ověřit je — trvá týdny. A nikdy to není "hotové."
+
+## Portál
+
+Data jsou v pipeline. Ale kdo je bude používat? Proto vznikl **leadforge.cz** — Next.js portál s filtrováním, AI asistentem a magic link autentizací. O tom víc v [samostatném článku](/blog/leadforge-portal).
