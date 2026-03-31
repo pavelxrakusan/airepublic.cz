@@ -19,7 +19,7 @@ export default function HomePage() {
         <HeroParticles />
 
         {/* Content layer */}
-        <div className="pointer-events-none relative z-10 flex flex-col items-center gap-6 px-6 pt-[50vh] sm:gap-8 sm:pt-[42vh]">
+        <div className="pointer-events-none relative z-10 flex flex-col items-center gap-6 px-6 pt-[60vh] sm:gap-8 sm:pt-[42vh]">
           {/* Subtitle */}
           <p
             className="max-w-xl text-center text-lg leading-relaxed text-muted animate-fade-in-up sm:text-xl"
