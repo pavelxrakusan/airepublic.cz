@@ -1,80 +1,112 @@
 ---
-title: "Měsíc s Claudem: z 'hele, zkusím to' na 'jak jsem bez toho žil?'"
-description: "Upřímná zpověď vývojáře, který před 30 dny poprvé otevřel Claude a dneska nedá bez něj ani commit. Co mě překvapilo, co mě štvalo a proč jsem zůstal."
+title: "10 věcí, co jsem se naučil za měsíc s Claudem"
+description: "Praktické tipy a postřehy po 30 dnech intenzivního používání Claude — od prompt engineeringu přes Claude Code workflow po chyby, kterých se vyvarovat."
 date: "2026-03-28"
-tags: ["Claude", "osobní zkušenost", "vibe coding", "produktivita"]
+tags: ["Claude", "tipy", "workflow", "produktivita"]
 ---
 
-Před měsícem jsem si řekl, že zkusím Claude. Nic víc. Žádný závazek, žádné expectations. Copilot mi fungoval dobře, GPT jsem používal na texty, život byl fajn.
+Po měsíci s Claudem mám sepsaný zápisník postřehů. Celý příběh jak jsem se k AI dostal — od free tieru přes počítání kachen po carfast.cz — jsem popsal v článku [Od free tieru po závislost](/blog/od-free-tieru-po-zavislost). Tady jsou konkrétní tipy, co mi fungují.
 
-Dneska píšu tenhle článek a Claude mi pomáhá s formulacemi. A já s tím nemám nejmenší problém.
+## 1. Sonnet na všechno, Opus na přemýšlení
 
-## Týden 1: Skeptik
+Nemusíš používat nejdražší model. Sonnet 4 zvládne 90 % úloh — je rychlý, levný a dostatečně chytrý. Opus nasazuju jen když potřebuji:
 
-Začal jsem s Claude.ai, free tier. První věc co jsem zkusil — hodil jsem mu kus legacy kódu a řekl "vysvětli mi co to dělá." A on to vysvětlil. Ne jako dokumentace, ale jako kolega, co ten kód napsal a teď ti ho předává.
+- Analyzovat velký codebase (150+ souborů)
+- Hluboký reasoning nad architekturou
+- Najít subtilní bug v komplexní logice
 
-To mě zaujalo. Ale pořád jsem si říkal — GPT to taky umí, ne?
+Pravidlo: začni Sonnetem. Přepni na Opus, jen když Sonnet nestačí.
 
-Rozdíl jsem poznal u delšího kontextu. Hodil jsem mu celý README, 3 soubory s konfigurací a zeptal se na konkrétní dependency conflict. Claude si přečetl **všechno** a odpověděl přesně. GPT v podobné situaci občas "zapomněl" první soubor.
+## 2. Kontext je král
 
-## Týden 2: Zvědavec
-
-Upgradnul jsem na Pro ($20/měs). Hlavně kvůli **Claude Code** — CLI nástroj, co přímo pracuje s tvým repozitářem.
-
-První session s Claude Code:
+Čím víc kontextu Claudovi dáš, tím lepší odpověď dostaneš. Nepiš "oprav bug." Piš:
 
 ```
-> claude "přidej dark mode toggle do navigation komponenty"
+V souboru /src/api/checkout.ts na řádku 47 padá TypeError:
+Cannot read property 'price' of undefined. Funkce se volá
+z CartComponent. Tady je relevantní kód: [kód]
 ```
 
-A on to udělal. Přečetl si existující kód, pochopil strukturu, přidal toggle, upravil Tailwind config, přidal CSS proměnné. Commitnul s rozumnou zprávou.
+Claude není jasnovidec. Je to kolega — a kolega taky potřebuje kontext.
 
-Seděl jsem u monitoru a říkal si: "Tohle je jako pair programming, ale ten druhý nikdy neodejde na kafe."
+## 3. CLAUDE.md změní hru
 
-## Týden 3: Závislák
+V kořenu projektu vytvoř soubor `CLAUDE.md` — popis projektu, konvence, tech stack. Claude Code ho čte při každé session. Místo opakovaného vysvětlování "používáme Tailwind, ne CSS moduly" to napíšeš jednou.
 
-Tady to přešlo z "používám" na "potřebuji." Claude Code se stal mým default nástrojem pro:
+Můj CLAUDE.md pro airepublic.cz má: tech stack, adresářovou strukturu, naming konvence, tón obsahu. 15 řádků, co ušetří stovky slov v promptech.
 
-- **Scaffolding** — "postav mi Next.js projekt s TypeScriptem, Tailwindem a MDX"
-- **Debugging** — "testy padají na tomhle řádku, proč?"
-- **Refactoring** — "přepiš tuhle komponentu na Server Component"
-- **Code review** — "podívej se na tenhle PR a řekni mi co je špatně"
+## 4. Iteruj, neopakuj
 
-Nejvíc mě překvapilo, jak dobře rozumí **kontextu projektu**. Nemusíš mu pokaždé vysvětlovat strukturu — přečte si soubory, podívá se na git historii a pochopí co se děje.
+Špatný workflow:
+1. Napiš prompt → dostaneš odpověď → nesedí → napiš celý prompt znovu
 
-## Týden 4: Evangelista
+Dobrý workflow:
+1. Napiš prompt → dostaneš odpověď → "změň X" → "přidej Y" → "odstraň Z"
 
-Tento web (airepublic.cz) je živý důkaz. Kompletně postavený s Claude Code — od `npx create-next-app` po Docker deployment. Včetně:
+Claude si pamatuje kontext konverzace. Využij to. Iterace je rychlejší než restart.
 
-- Next.js 15 App Router s TypeScript strict mode
-- MDX content systém s frontmatter
-- Particle animace hero sekce (tuhle mi Claude napsal celou)
-- Tailwind v4 s custom theme
-- OG image generátor
-- Docker multi-stage build
+## 5. Extended thinking zapínej selektivně
 
-Nebyl to copy-paste z ChatGPT. Byla to konverzace: "chci tohle" → Claude to napsal → "změň tamto" → Claude upravil → "super, commitni." Jako skutečný pair programming.
+Extended thinking je skvělé pro složité problémy, ale pro jednoduchý "přepiš tuhle funkci" je zbytečné. Zdržuje a stojí víc tokenů.
 
-## Co mě štvalo (protože žádný nástroj není dokonalý)
+Zapínám ho pro:
+- Architektonická rozhodnutí
+- Debugging záhadných chyb
+- Srovnání více přístupů
+- Analýzu bezpečnostních rizik
 
-**Občasná přehnaná opatrnost.** Zeptáš se na legitimní security téma a Claude začne přednášet o etice. Chápu proč to dělají, ale někdy je to frustrující.
+## 6. Claude Code > copy-paste z chatu
 
-**Rate limity na Pro.** Při intenzivním code sessions narazíš na limit. Naučil jsem se rozdělit práci na menší kousky — což je vlastně dobrá programátorská praxe, takže díky, Claude.
+Největší skok v produktivitě nebyl lepší prompting — byl přechod z webového chatu na Claude Code v terminálu. Rozdíl:
 
-**Extended thinking** je skvělé, ale někdy přemýšlí zbytečně dlouho nad jednoduchým problémem. Jako ten kolega, co analyzuje 20 minut kam jít na oběd.
+- **Chat:** napíšeš → dostaneš kód → kopíruješ → vkládáš → upravuješ
+- **Claude Code:** napíšeš → kód je v souboru → testuješ → commitneš
 
-## Čísla po 30 dnech
+Není to jen pohodlí. Je to fundamentálně jiný workflow — Claude pracuje **s** tvým projektem, ne vedle něj.
 
-| Metrika | Před Claudem | S Claudem |
-|---------|-------------|-----------|
-| Nový projekt setup | 2-3 hodiny | 20 minut |
-| Code review čas | 45 min | 15 min |
-| Debugging session | "jak dlouho máš?" | 5-10 min |
-| Commit messages | "fix stuff" | Smysluplné popisy |
-| Dokumentace | "udělám to zítra" | Generuje se průběžně |
+## 7. MCP servery rozšiřují superschopnosti
 
-## Zůstanu?
+MCP (Model Context Protocol) připojí Claude k externím nástrojům. Můj setup:
 
-100 %. Claude Pro za $20/měs je nejlepší investice do mé produktivity. A Claude Code je důvod proč. Ne proto, že píše kód za mě — proto, že **myslí se mnou**.
+- **GitHub** — čte issues, vytváří PR
+- **Filesystem** — pracuje se soubory mimo repo
+- **Vercel** — deploy status, logy
 
-Jestli jsi vývojář a ještě jsi Claude nezkoušel — dej tomu týden. Ale varuju: cesta zpět neexistuje.
+Jednou nastavíš, navždy funguje. Claude se z chytrého chatbota stane nástrojem propojeným s tvým ekosystémem.
+
+## 8. Limity jsou reálné — plánuj kolem nich
+
+Claude Pro má limity. Při intenzivní práci na ně narazíš. Moje strategie:
+
+- **Rozděluj úlohy** — místo jednoho obřího promptu rozděl na menší kroky
+- **Víc sessions** — ve Warpu mám 2-3 Claude Code taby na různé úlohy
+- **Batch práci** — podobné úlohy dej dohromady
+- **Odpočinek** — když hitneš limit, jdi si dát kafe. Mozek to potřebuje taky
+
+## 9. AI nepíše dokonalý kód na první pokus
+
+Claude napíše funkční kód. Ale ne vždy optimální. Vždycky:
+
+- Přečti si co ti vrátil (i když to "funguje")
+- Testuj edge cases
+- Kontroluj security (AI někdy zapomene na sanitizaci inputu)
+- Refaktoruj, pokud vidíš lepší cestu
+
+Claude je junior developer s encyklopedickými znalostmi. Tvoje seniorní uvažování je stále potřeba.
+
+## 10. Dokumentuj si prompty co fungují
+
+Když najdeš prompt, co dává konzistentně dobré výsledky, ulož si ho. Mám soubor `prompts.md` kde mám šablony na:
+
+- Code review ("projdi tento PR, zaměř se na...")
+- Refactoring ("přepiš na Server Component, zachovej...")
+- Debugging ("analyzuj tento error, kontext je...")
+- Content ("napiš článek v tomto tónu, struktura je...")
+
+Prompt engineering není věda — je to sbírka tipů, co fungují pro tvůj specifický use case.
+
+## Bonus: tohle nečekej
+
+- **AI nenahradí programátora.** Nahradí programátora, co AI nepoužívá.
+- **Nebudeš rychlejší hned.** První týden se učíš. Od druhého týdne letíš.
+- **Budeš přemýšlet jinak.** Místo "jak to naprogramuji" začneš přemýšlet "co chci, aby to dělalo." A to je lepší otázka.
