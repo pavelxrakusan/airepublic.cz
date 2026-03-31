@@ -1,0 +1,165 @@
+---
+title: "Jak jsme udělali z webu Next.js playground: každá feature má důvod"
+description: "airepublic.cz není jen blog — je to showcase toho, co Next.js 15 umí. Particle animace, tamagotchi maskot, dark mode, Konami kód a intercepting routes. Tady je proč a jak."
+date: "2026-03-31"
+tags: ["Next.js", "showcase", "architektura", "CSS animace", "easter eggs"]
+---
+
+Když stavíš web o technologiích, samotný web by měl být důkazem, že víš o čem mluvíš. Proto jsme z airepublic.cz udělali víc než blog — je to playground, kde každá Next.js feature má své místo.
+
+Tady je co jsme přidali, proč, a jak to funguje pod kapotou.
+
+## Particle hero animace
+
+**Co:** Text "airepublic.cz" se složí z tisíců barevných bodů v barvách české vlajky. Na desktopu mouse repulze — přejedeš myší a body se rozlétnou.
+
+**Proč:** First impression. Návštěvník přijde na web a okamžitě vidí, že tohle není generický template. Plus je to dobrý test performance — canvas s 3000+ particles musí jet na 60fps.
+
+**Jak:** Client Component s `useEffect`. Offscreen canvas renderuje text systémovým fontem, `getImageData` sampluji pixely, každý pixel = particle s target pozicí. Animační loop s `requestAnimationFrame`, easing + mouse repulsion physics.
+
+```typescript
+// Česká vlajka — barva podle pozice pixelu v textu
+function getCzFlagColor(rx: number, ry: number): string {
+  // Modrý klín vlevo
+  if (rx < 0.5 && ry >= rx && ry <= 1 - rx) return '#11457E'
+  // Horní polovina = šedá, dolní = červená
+  return ry < 0.5 ? '#B0B0B0' : '#D7141A'
+}
+```
+
+Na mobilu canvas nefunguje spolehlivě (Safari a offscreen canvas jsou nepřátelé), takže mobilní verze ukazuje pouze maskota.
+
+**Next.js feature:** Client Component boundary — `'use client'` jen na canvas komponentě, zbytek homepage je Server Component.
+
+## Tamagotchi maskot
+
+**Co:** Pixel art postavička s 21 chováními — mává, píše na laptop, spí, tancuje, přemýšlí, spawnuje agenty, chatuje s nimi, debuguje bugy, deployuje rakety.
+
+**Proč:** Osobnost. Každý web má logo, ale kolik webů má živého maskota? Inspirace: Claude.ai má svého pixel mascota s animacemi. My jsme to vzali o level výš — interakce, multi-agent scény, achievements.
+
+**Jak:** SVG pixel grid definovaný jako 2D pole. Každé chování = sekvence frame gridů s timing definicí. State machine v Reactu cykluje přes behaviors.
+
+```typescript
+const IDLE: Grid = [
+  [_,_,_,_,B,_,_,_,B,_,_,_,_],  // uši
+  [_,_,_,B,B,B,B,B,B,B,_,_,_],  // hlava
+  [_,_,B,B,D,B,B,B,D,B,B,_,_],  // oči
+  // ... 9 řádků, 13 sloupců
+]
+```
+
+Multi-agent scény (spawn, chat, handoff) renderují dva SVG griby vedle sebe. Buddy je zrcadlený přes `mirror()` helper. Spawn animace postupně odhaluje pixely buddyho v náhodném pořadí.
+
+**Next.js feature:** Scalable client component s props — `scale={12}` na mobilu (hero), `scale={6}` na desktopu, `scale={4}` jako floating guide.
+
+## Floating průvodce
+
+**Co:** Malý maskot v pravém dolním rohu na každé stránce (kromě homepage). Říká kontextové hlášky, občas vykukuje ze strany, můžeš ho přetáhnout kamkoliv.
+
+**Proč:** Web by měl být živý. Floating mascot přidává osobnost bez toho, aby překážel. Kontextové bubliny ("Hezký článek!" na blogu, "Claude je jednička!" na nástrojích) ukazují, že web reaguje na to, kde jsi.
+
+**Jak:** `usePathname()` z Next.js detekuje aktuální route → vybere pool hlášek. Speech bublina se zobrazí každých 12-20s, zmizí po 3.5s. Peek-a-boo efekt s CSS transition. Drag přes pointer events s capture.
+
+```typescript
+const BUBBLES_BY_PATH: Record<string, string[]> = {
+  '/blog': ['Hezký článek!', 'Scrolluj dál...'],
+  '/nastroje': ['Claude je jednička! 💜', 'Testoval jsem všechny.'],
+  // ...
+}
+```
+
+**Next.js feature:** `usePathname()` hook pro kontextové chování, component v `layout.tsx` = persistuje napříč navigacemi.
+
+## Achievement systém
+
+**Co:** Klikáš na maskota → počítadlo v localStorage. Milníky: 10× = "Kamarád", 50× = "Best Friends", 100× = "Závislák", 200× = "Legenda". Toast notifikace při dosažení.
+
+**Proč:** Gamifikace. Lidé rádi klikají a rádi dostávají odměny. Plus to motivuje k interakci s maskotem.
+
+**Jak:** `localStorage` pro persistenci, React state pro toasty. Zero backend, zero cookies.
+
+## Dark mode
+
+**Co:** Ikonka měsíce/slunce v navigaci. Klik přepne celý web mezi light a dark mode.
+
+**Proč:** Protože dark mode chce každý. A protože to ukazuje, jak CSS custom properties fungují — jeden `classList.toggle('dark')` a celý web se přepne.
+
+**Jak:** CSS třída `.dark` na `<html>` elementu přepisuje theme proměnné v `@theme`. Persistuje v localStorage.
+
+```css
+.dark {
+  --color-background: #0a0a0a;
+  --color-foreground: #f8fafc;
+  --color-card: #141414;
+  /* ... */
+}
+```
+
+**Next.js feature:** Tailwind v4 `@theme` s CSS custom properties + class-based dark mode.
+
+## Konami kód
+
+**Co:** Zadej ↑↑↓↓←→←→BA na klávesnici → pixel ohňostroj exploduje přes celou obrazovku.
+
+**Proč:** Easter egg. Vývojáři to milují. A je to důkaz, že web má duši.
+
+**Jak:** `useEffect` listener na `keydown`, sliding window sekvence. Při match se renderuje 40 CSS particles s custom properties `--tx` a `--ty` pro směr letu.
+
+```css
+@keyframes konami-particle {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+```
+
+## Custom 404 stránka
+
+**Co:** Maskot hledá ztracenou stránku. "Tady nic není... ale maskot tu je!"
+
+**Proč:** Default 404 je nudná. Custom 404 ukazuje osobnost a udržuje uživatele na webu.
+
+**Next.js feature:** `not-found.tsx` v app directory — automaticky se zobrazí pro neexistující routes.
+
+## Custom error stránka
+
+**Co:** Maskot s "Něco se pokazilo" textem a retry tlačítkem.
+
+**Proč:** Chyby se stávají. Místo bílé stránky smrti ukážeme přátelskou tvář.
+
+**Next.js feature:** `error.tsx` s `'use client'` — Error Boundary pattern, `reset()` funkce pro retry.
+
+## Skeleton loading
+
+**Co:** Na stránkách Blog a Nástroje se při načítání zobrazí animované skeleton placeholdery místo prázdné stránky.
+
+**Proč:** Perceived performance. Uživatel vidí strukturu stránky okamžitě, data se dotáhnou.
+
+**Next.js feature:** `loading.tsx` v route segmentech — automatický Suspense boundary.
+
+## Co je pod kapotou celkově
+
+| Next.js feature | Kde se používá |
+|----------------|----------------|
+| App Router | Celá struktura webu |
+| Server Components | Všechny stránky (default) |
+| Client Components | Maskot, navigace, canvas, easter eggs |
+| `loading.tsx` (Suspense) | Blog, Nástroje |
+| `error.tsx` (Error Boundary) | Globální error handling |
+| `not-found.tsx` | Custom 404 |
+| `generateStaticParams` | Blog a nástroje detail stránky |
+| `generateMetadata` | Dynamické SEO pro každou stránku |
+| Metadata API | Root layout, OG images |
+| `usePathname` | Navigace, floating mascot kontext |
+| Route Handlers | OG image generátor |
+| MDX (next-mdx-remote) | Všechny články a recenze |
+| `next/font` (Geist) | Typografie |
+| Tailwind v4 + `@theme` | Celý design systém |
+
+## Poučení
+
+1. **Web je tvůj CV.** Pokud píšeš o Next.js, tvůj web by měl být nejlepší ukázka.
+2. **Detaily dělají rozdíl.** Konami kód nezvýší traffic. Ale udělá z webu zážitek.
+3. **Progresivní enhancement.** Canvas particle animace na desktopu, jednoduchý maskot na mobilu. Funguje všude.
+4. **AI + vibe coding = rychlost.** Všechno výše jsem postavil s Claude Code za jeden víkend. Sám bych na to potřeboval týdny.
+
+A teď — zkus ten Konami kód. ↑↑↓↓←→←→BA. 🎮
