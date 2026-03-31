@@ -179,15 +179,11 @@ export default function SnakeGame({ onGameOver, onClose }: SnakeGameProps) {
         else if (directionRef.current === 'LEFT') nx--
         else nx++
 
-        // Wall collision
-        if (nx < 0 || nx >= GRID_SIZE || ny < 0 || ny >= GRID_SIZE) {
-          statusRef.current = 'dead'
-          deadAtRef.current = Date.now()
-          setStatus('dead')
-          onGameOverRef.current(scoreRef.current)
-          draw()
-          return
-        }
+        // Wrap around edges
+        if (nx < 0) nx = GRID_SIZE - 1
+        else if (nx >= GRID_SIZE) nx = 0
+        if (ny < 0) ny = GRID_SIZE - 1
+        else if (ny >= GRID_SIZE) ny = 0
 
         const newHead: Point = { x: nx, y: ny }
 

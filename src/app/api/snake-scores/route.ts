@@ -1,4 +1,4 @@
-import { list, put } from '@vercel/blob'
+import { list, put, getDownloadUrl } from '@vercel/blob'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface ScoreEntry {
@@ -15,7 +15,8 @@ async function readScores(): Promise<ScoreEntry[]> {
   const { blobs } = await list({ prefix: BLOB_KEY })
   if (blobs.length === 0) return []
 
-  const res = await fetch(blobs[0].url)
+  const downloadUrl = await getDownloadUrl(blobs[0].url)
+  const res = await fetch(downloadUrl)
   if (!res.ok) return []
 
   const data = await res.json()
@@ -24,7 +25,7 @@ async function readScores(): Promise<ScoreEntry[]> {
 
 async function writeScores(scores: ScoreEntry[]): Promise<void> {
   await put(BLOB_KEY, JSON.stringify(scores), {
-    access: 'public',
+    access: 'private',
     addRandomSuffix: false,
   })
 }
