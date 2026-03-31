@@ -36,12 +36,14 @@ export default function AboutPage() {
           naplňuje. A&nbsp;po večerech? Po večerech stavím věci s&nbsp;AI.
         </p>
 
-        <h2>Weby stavím od roku 2000</h2>
+        <h2>25 let v grafice a na webu</h2>
         <p>
-          Tohle není příběh o&nbsp;tom, jak jsem poprvé uviděl kód. Weby dělám
-          přes 25 let — HTML, CSS, základy PHP, MySQL, hromada WordPressů,
-          Wix, custom řešení. Navrhoval jsem design a&nbsp;architekturu, na
-          složitější backend jsem spolupracoval s&nbsp;programátory nebo je
+          Tohle není příběh o&nbsp;tom, jak jsem poprvé uviděl kód. V&nbsp;oboru
+          se pohybuji přes 25 let — grafika, DTP, loga, printy, merch, weby.
+          Co se dá vidět nebo tisknout, na tom jsem se pravděpodobně podílel.
+          Weby dělám od roku 2000 — HTML, CSS, základy PHP, MySQL, hromada
+          WordPressů, Wix, custom řešení. Navrhoval jsem design a&nbsp;architekturu,
+          na složitější backend jsem spolupracoval s&nbsp;programátory nebo je
           najímal. Tak to fungovalo roky: já dělám koncept, UX a&nbsp;vizuál,
           profík kóduje.
         </p>
