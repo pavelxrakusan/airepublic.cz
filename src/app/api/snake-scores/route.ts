@@ -17,6 +17,7 @@ async function readScores(): Promise<ScoreEntry[]> {
     if (blobs.length === 0) return []
 
     const result = await get(blobs[0].url, { access: 'private' })
+    if (!result) return []
     const chunks: Uint8Array[] = []
     for await (const chunk of result.stream) {
       chunks.push(chunk as Uint8Array)
