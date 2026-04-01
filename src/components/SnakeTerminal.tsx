@@ -19,17 +19,12 @@ export default function SnakeTerminal() {
   const [lines, setLines] = useState<Line[]>(INITIAL_LINES)
   const [input, setInput] = useState('')
   const [playing, setPlaying] = useState(false)
-  const [gameOverScore, setGameOverScore] = useState<number | null>(null)
-  const [name, setName] = useState('')
-  const [submitting, setSubmitting] = useState(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
-  const nameInputRef = useRef<HTMLInputElement>(null)
   const outputRef = useRef<HTMLDivElement>(null)
 
   const addLine = useCallback((text: string, type: Line['type']) => {
     setLines((prev) => [...prev, { text, type }])
-    // Scroll to bottom after render
     setTimeout(() => {
       if (outputRef.current) {
         outputRef.current.scrollTop = outputRef.current.scrollHeight
@@ -119,59 +114,15 @@ export default function SnakeTerminal() {
   const handleGameOver = useCallback(
     (score: number) => {
       setPlaying(false)
-      setGameOverScore(score)
-      addLine(`Hra skončila! Skóre: ${score}`, 'output')
-      addLine('Zadej své jméno pro uložení skóre:', 'output')
-      setTimeout(() => {
-        nameInputRef.current?.focus()
-      }, 0)
+      addLine(`Game over! Skóre: ${score}`, 'output')
     },
     [addLine],
   )
 
   const handleClose = useCallback(() => {
     setPlaying(false)
-    // Don't add "Hra ukončena" if game over already handled it
-    if (gameOverScore === null) {
-      addLine('Hra ukončena.', 'output')
-    }
-  }, [addLine, gameOverScore])
-
-  const handleNameSubmit = useCallback(async () => {
-    const trimmedName = name.trim()
-    if (!trimmedName || gameOverScore === null || submitting) return
-
-    setSubmitting(true)
-    try {
-      const res = await fetch('/api/snake-scores', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: trimmedName, score: gameOverScore }),
-      })
-      if (res.ok) {
-        addLine(`Skóre ${gameOverScore} uloženo jako '${trimmedName}'!`, 'success')
-        window.dispatchEvent(new Event('snake-score-updated'))
-      } else {
-        addLine('Chyba při ukládání skóre.', 'error')
-      }
-    } catch {
-      addLine('Chyba při ukládání skóre.', 'error')
-    } finally {
-      setSubmitting(false)
-      setGameOverScore(null)
-      setName('')
-      inputRef.current?.focus()
-    }
-  }, [name, gameOverScore, submitting, addLine])
-
-  const handleNameKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        handleNameSubmit()
-      }
-    },
-    [handleNameSubmit],
-  )
+    addLine('Hra ukončena.', 'output')
+  }, [addLine])
 
   const focusInput = useCallback(() => {
     inputRef.current?.focus()
@@ -217,51 +168,21 @@ export default function SnakeTerminal() {
             </div>
           ))}
 
-          {/* Name input row after game over */}
-          {gameOverScore !== null && (
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-zinc-500">jméno:</span>
-              <input
-                ref={nameInputRef}
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value.slice(0, 12))}
-                onKeyDown={handleNameKeyDown}
-                disabled={submitting}
-                maxLength={12}
-                className="flex-1 bg-transparent text-zinc-300 outline-none caret-green-400"
-                onClick={(e) => e.stopPropagation()}
-              />
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleNameSubmit()
-                }}
-                disabled={submitting}
-                className="text-xs text-zinc-500 hover:text-zinc-300 disabled:opacity-50"
-              >
-                [Enter]
-              </button>
-            </div>
-          )}
-
           {/* Command input row */}
-          {gameOverScore === null && (
-            <div className="flex items-center gap-1 mt-1">
-              <span className="text-green-400">$&nbsp;</span>
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="flex-1 bg-transparent text-zinc-300 outline-none caret-green-400"
-                autoComplete="off"
-                spellCheck={false}
-                onClick={(e) => e.stopPropagation()}
-              />
-            </div>
-          )}
+          <div className="flex items-center gap-1 mt-1">
+            <span className="text-green-400">$&nbsp;</span>
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 bg-transparent text-zinc-300 outline-none caret-green-400"
+              autoComplete="off"
+              spellCheck={false}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
         </div>
       </div>
     </>
