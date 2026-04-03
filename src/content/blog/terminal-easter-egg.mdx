@@ -1,0 +1,124 @@
+---
+title: "Postavil jsem terminál, který vás nenávidí"
+description: "Interaktivní terminál s vlastní osobností, 30+ příkazy a meltdownem. Zkuste ho neotrávit — nebo zkuste."
+date: "2026-04-03"
+tags: ["projekt", "easter egg", "React", "vibe coding", "humor"]
+---
+
+Každý slušný web má footer s odkazem na blog, kontakt a podmínky použití. Tenhle web má v patičce odkaz na terminál, který vás postupně začne urážet.
+
+## Motivace (neboli "proč tohle existuje")
+
+Existují dva typy vývojářů. Jedni dělají užitečné věci — optimalizují SEO, píšou testy, nasazují feature flagy. Druzí v sobotu večer programují terminál s trpělivostním systémem, který po sérii otravných příkazů spustí falešný Blue Screen of Death.
+
+Hádejte, do které kategorie patřím.
+
+## Co to umí
+
+Na první pohled vypadá jako normální terminál. Zelený prompt, černé pozadí, blikající kurzor. Napíšete `help` a dostanete seznam příkazů. Napíšete `about` a dozvíte se o airepublic.cz. Zdvořilé, profesionální, nudné.
+
+To se ale změní.
+
+### 30+ příkazů
+
+Terminál rozumí spoustě příkazů — od užitečných po absurdní:
+
+- `weather` — předpověď počasí (zataženo s přeháňkami kódu, občasný segfault)
+- `joke` — programátorské vtipy v češtině (existují 10 typů lidí...)
+- `neofetch` — systémové info airepublic.cz, protože proč ne
+- `cowsay` — ASCII kráva, která vás pomlouvá
+- `sl` — protože jste chtěli napsat `ls` a teď jedete vlakem
+- `cat .env` — hezký pokus, šerloiku
+
+A pak jsou tu ty *zajímavé*:
+
+```
+$ sudo rm -rf /
+🚨 VAROVÁNÍ: Pokus o smazání kořenového adresáře
+Incident zaznamenán. IP adresa odeslána na NÚKIB.
+```
+
+```
+$ hack nasa
+Připojování k satelitu...
+Obcházení firewallu...
+Stahování přísně tajných dat...
+...ERROR: Tvůj internet je na to moc pomalý.
+```
+
+## Trpělivostní systém (nejtemnější feature)
+
+Tady to začíná být zajímavé. Terminál má skrytý **annoyance meter** — číslo od 0 do 100, které sleduje, jak moc ho otravujete. Vidíte ho v title baru jako zelený proužek s nápisem "trpělivost". Postupně se zmenšuje. A mění barvu.
+
+### Level 0-20: Přátelský
+Normální odpovědi. `help` ukáže všechny příkazy. Neznámé příkazy dostanou slušnou odpověď. Všechno je v pořádku.
+
+### Level 21-50: Podrážděný
+Začínají sarkastické poznámky. `help` skryje polovinu příkazů ("zbytek si najdi sám"). Mezi odpověďmi se občas objeví `(Vzdychá...)` nebo `(Koukám, máš volno...)`.
+
+### Level 51-80: Nepřátelský
+Terminál občas odmítne provést příkaz. `ls` místo souborů vypíše vaše prohřešky. `whoami` vrátí "Problém. Ty jsi problém." Obrazovka se začne občas třást.
+
+### Level 81-95: Varování
+"Tohle je tvoje poslední varování." "Vím kde bydlíš." Screen glitche. Červený text. Atmosféra jako v hororu, ale v browseru.
+
+### Level 96+: MELTDOWN
+
+A pak se to stane.
+
+## Meltdown sekvence
+
+Tady jsem se vyřádil. Když trpělivost dosáhne kritické hodnoty, terminál přebírá kontrolu:
+
+1. **SYSTEM OVERRIDE INITIATED** — červený blikající text
+2. Terminál "najde" vaše soubory (`diplomka-final-FINAL-v3.docx`, `hesla.txt`, `free-vbucks-generator.bat`)
+3. Začne je mazat. Jeden po druhém. S progress barem
+4. `FORMATTING C:\ ...` — protože proč ne míchat Linux a Windows
+5. **Fake BSOD** — modrá obrazovka s error kódem `IRQL_USER_ANNOYANCE_EXCEEDED`
+6. Černá obrazovka. Ticho. "Restarting..."
+7. "Just kidding. Ale příště si dej pozor."
+
+Celé se to resetuje na level 0. Můžete začít znovu. Nepoučíte se.
+
+### Co zvyšuje annoyance
+
+| Akce | Body |
+|------|------|
+| Neznámé příkazy | +2 |
+| Opakování příkazů | +3 |
+| `sudo` cokoliv | +5 |
+| `rm -rf /` | +10 |
+| Spamování (3+ příkazy za 5s) | +8 |
+
+Všimněte si, že příkaz `please` snižuje annoyance o 2 body. Protože slušné vychování se počítá. I u terminálu.
+
+## Jak je to postavené
+
+Žádné AI, žádné API volání, žádné servery. Celý terminál běží čistě na klientu — TypeScript, React, CSS animace. Zero cost.
+
+Architektura je jednoduchá — tři vrstvy:
+
+**Command engine** — parsuje vstup, vrací odpovědi. Čistá funkce `executeCommand(input, annoyance, lastCommand)` bez side effectů. Všech 30+ příkazů je v jednom souboru jako registry.
+
+**Personality system** — sleduje annoyance, detekuje spam, generuje náhodné poznámky mezi odpověďmi. Občas vám řekne `(Počítám do deseti...)` aniž byste se na cokoliv ptali.
+
+**Effects system** — CSS animace pro glitch, screen shake, BSOD overlay. Clip-path hackery pro ten znepokojivý "rozbité video" efekt.
+
+```css
+@keyframes terminal-glitch {
+  0% { clip-path: inset(40% 0 61% 0); transform: translate(-2px, 2px); }
+  20% { clip-path: inset(43% 0 1% 0); transform: translate(-1px, 3px); }
+  /* ... 10 kroků náhodných řezů a posunů */
+  100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+}
+```
+
+Celý terminál je ~760 řádků TypeScriptu + ~60 řádků CSS. Refresh stránky = reset. Žádný localStorage, žádná persistence. Vaše utrpení je efemérní.
+
+## Zkuste to
+
+Odkaz je v patičce. Nebo prostě jděte na [/terminal](/terminal).
+
+Doporučení: začněte s `help`. Pak zkuste `neofetch`. Pak `cowsay`. A pak... no, zkuste `sudo rm -rf /` a uvidíte, co se stane.
+
+Upozornění: žádné skutečné soubory nebyly poškozeny při tvorbě tohoto easter eggu. Vaše `diplomka-final-FINAL-v3.docx` je v bezpečí. Pravděpodobně.
