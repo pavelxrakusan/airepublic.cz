@@ -161,3 +161,66 @@ body {
   border-radius: 8px;
   margin: 1.5em 0;
 }
+
+/* ── Terminal effects ──────────────────────────────── */
+
+@keyframes terminal-glitch {
+  0% { clip-path: inset(40% 0 61% 0); transform: translate(-2px, 2px); }
+  10% { clip-path: inset(92% 0 1% 0); transform: translate(1px, -1px); }
+  20% { clip-path: inset(43% 0 1% 0); transform: translate(-1px, 3px); }
+  30% { clip-path: inset(25% 0 58% 0); transform: translate(2px, 1px); }
+  40% { clip-path: inset(54% 0 7% 0); transform: translate(-3px, -2px); }
+  50% { clip-path: inset(58% 0 43% 0); transform: translate(1px, 2px); }
+  60% { clip-path: inset(28% 0 30% 0); transform: translate(-2px, -1px); }
+  70% { clip-path: inset(75% 0 2% 0); transform: translate(3px, -2px); }
+  80% { clip-path: inset(1% 0 85% 0); transform: translate(-1px, 1px); }
+  90% { clip-path: inset(37% 0 53% 0); transform: translate(2px, -3px); }
+  100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+}
+
+@keyframes terminal-shake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-4px, 2px); }
+  20% { transform: translate(3px, -2px); }
+  30% { transform: translate(-2px, 4px); }
+  40% { transform: translate(4px, -1px); }
+  50% { transform: translate(-3px, 3px); }
+  60% { transform: translate(2px, -4px); }
+  70% { transform: translate(-4px, 1px); }
+  80% { transform: translate(3px, 3px); }
+  90% { transform: translate(-1px, -2px); }
+}
+
+@keyframes terminal-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes terminal-scanline {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+.terminal-glitch {
+  animation: terminal-glitch 0.3s linear infinite;
+}
+
+.terminal-shake {
+  animation: terminal-shake 0.4s linear infinite;
+}
+
+.terminal-blink {
+  animation: terminal-blink 0.5s step-end infinite;
+}
+
+.terminal-scanline::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  animation: terminal-scanline 3s linear infinite;
+  pointer-events: none;
+}
