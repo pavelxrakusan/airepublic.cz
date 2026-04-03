@@ -12,14 +12,14 @@ import { StaggerDemo } from './demos/StaggerDemo'
 import { PhysicsDemo } from './demos/PhysicsDemo'
 
 const demos = [
-  { title: 'Drag & Drop', description: 'Přetáhni elementy kamkoliv — s elastickým návratem.', component: DragDemo },
-  { title: 'Spring Physics', description: 'Fyzikální pružiny reagují na kliknutí.', component: SpringDemo },
-  { title: 'Layout Animace', description: 'Plynulé přeuspořádání elementů.', component: LayoutDemo },
-  { title: 'Gesta', description: 'Hover, tap a složená gesta.', component: GestureDemo },
-  { title: 'Scroll Progress', description: 'Animace řízené scrollem.', component: ScrollDemo },
-  { title: 'Morphing', description: 'Plynulé přechody mezi tvary.', component: MorphDemo },
-  { title: 'Stagger Effect', description: 'Kaskádové objevování elementů.', component: StaggerDemo },
-  { title: 'Gravitace', description: 'Simulace fyziky s odrazem.', component: PhysicsDemo },
+  { title: 'Drag & Drop', description: 'Přetahuj karty po ploše — s fyzikálním návratem a rotací.', component: DragDemo },
+  { title: 'Notifikace', description: 'Spring animace pro toast notifikace. Klikni pro přidání.', component: SpringDemo },
+  { title: 'Tabs s indikátorem', description: 'Layout animace pro plynulý přesun tab indikátoru.', component: LayoutDemo },
+  { title: 'Gesta & Interakce', description: 'Like button, hover karty — reálné UI patterny.', component: GestureDemo },
+  { title: 'Scroll Progress', description: 'Progress bar a elementy řízené pozicí scrollu.', component: ScrollDemo },
+  { title: 'Stavový přechod', description: 'Plynulé přechody mezi stavy deploy pipeline.', component: MorphDemo },
+  { title: 'Feature Grid', description: 'Kaskádové zobrazení feature karet.', component: StaggerDemo },
+  { title: 'Gravitace', description: 'Simulace pádu s odrazem a squash efektem.', component: PhysicsDemo },
 ]
 
 export function PlaygroundContent() {

@@ -11,7 +11,6 @@ export function PhysicsDemo() {
     if (dropping) return
     setDropping(true)
 
-    // Simulate gravity with bouncing
     await controls.start({
       y: [0, 180, 120, 180, 150, 180],
       transition: {
@@ -21,17 +20,16 @@ export function PhysicsDemo() {
       },
     })
 
-    // Squash on final landing
     await controls.start({
-      scaleX: 1.3,
-      scaleY: 0.7,
-      transition: { duration: 0.1 },
+      scaleX: 1.4,
+      scaleY: 0.6,
+      transition: { duration: 0.08 },
     })
 
     await controls.start({
       scaleX: 1,
       scaleY: 1,
-      transition: { type: 'spring', stiffness: 400, damping: 10 },
+      transition: { type: 'spring', stiffness: 500, damping: 8 },
     })
 
     setDropping(false)
@@ -48,14 +46,16 @@ export function PhysicsDemo() {
   }, [controls])
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="relative h-[220px] w-20">
+    <div className="flex flex-col items-center gap-4 p-4">
+      <div className="relative h-[220px] w-32">
         <motion.div
           animate={controls}
-          className="absolute left-1/2 top-0 h-12 w-12 -translate-x-1/2 rounded-full bg-rose-500 shadow-lg"
-        />
-        {/* Floor */}
-        <div className="absolute bottom-0 h-0.5 w-full bg-border" />
+          className="absolute left-1/2 top-0 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-red-500 text-xl shadow-lg"
+          style={{ marginLeft: -28 }}
+        >
+          🏀
+        </motion.div>
+        <div className="absolute bottom-0 h-0.5 w-full rounded bg-border" />
       </div>
       <div className="flex gap-2">
         <button
