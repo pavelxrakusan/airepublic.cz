@@ -18,6 +18,9 @@ export function Footer() {
           <Link href="/o-mne" className="text-sm text-muted transition-colors hover:text-foreground">
             O mně
           </Link>
+          <Link href="/terminal" className="text-sm text-muted transition-colors hover:text-foreground">
+            Terminal
+          </Link>
         </nav>
       </div>
     </footer>
