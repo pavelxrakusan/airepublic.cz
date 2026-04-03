@@ -8,7 +8,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import ShareButtons from '@/components/ShareButtons'
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://airepublic.cz'
+const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://airepublic.cz').trim()
 
 export function generateStaticParams() {
   return getAllSlugs('blog').map((slug) => ({ slug }))
