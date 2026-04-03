@@ -1,0 +1,152 @@
+---
+title: "Skryté superschopnosti Claude, o kterých většina lidí neví"
+description: "Claude umí víc než chat. Artifacts, extended thinking, computer use, Claude Code — přehled funkcí, které vás překvapí a změní váš workflow."
+date: "2026-04-03"
+tags: ["Claude", "tipy", "funkce", "Anthropic", "workflow", "pokročilé"]
+image: "/images/blog/skryte-superschopnosti-claude.png"
+---
+
+Většina lidí zná Claude jako "ten druhý chatbot vedle ChatGPT." Otevřou claude.ai, napíšou otázku, dostanou odpověď. A tím to pro ně končí.
+
+Ale Claude má pod kapotou věci, o kterých běžný uživatel netuší. Funkce, které z něj dělají víc než chatovací okýnko — dělají z něj vývojářský nástroj, analytický engine a kreativního partnera zároveň.
+
+Tady je přehled schopností, které mě osobně překvapily. Každou z nich aktivně používám.
+
+## 1. Extended Thinking — Claude přemýšlí nahlas
+
+Tohle je asi největší věc, co Claude odlišuje od konkurence. Když zapnete extended thinking, Claude vám ukáže celý svůj myšlenkový proces — krok po kroku, v reálném čase.
+
+Není to jen "chain of thought" jako u GPT-o1. Claude doslova přemýšlí nahlas: zvažuje alternativy, zpochybňuje vlastní předpoklady, vrací se a opravuje se. A vy to vidíte.
+
+Kdy to reálně pomáhá:
+- **Složité analytické úlohy** — rozplétání požadavků, architektonické rozhodnutí
+- **Debugging** — Claude projde kód krok po kroku a najde problém
+- **Matematika a logika** — vidíte kde přesně udělal chybu (pokud udělal)
+
+Kdy je to zbytečné: jednoduché otázky typu "přelož tohle do angličtiny." Tam thinking jen zpomaluje.
+
+**Můj komentář:** Extended thinking používám denně. Ne na všechno — ale když potřebuji, aby Claude opravdu *přemýšlel* a ne jen generoval text, je to nepostradatelné. Kvalita odpovědí je s thinking zapnutým výrazně vyšší u čehokoliv složitějšího.
+
+## 2. Artifacts & Projects — interaktivní workspace
+
+Artifacts jsou jedna z věcí, které musíte vidět, abyste pochopili. Když Claude generuje kód, dokument nebo vizualizaci, nevyplivne to jako text do chatu. Místo toho vytvoří **interaktivní artifact** — živý preview vedle konverzace.
+
+Co všechno artifact umí:
+- **React komponenty** — živý preview, můžete klikat, interagovat
+- **SVG a diagramy** — Mermaid, ASCII art, vizualizace dat
+- **Dokumenty** — Markdown s formátováním, export do PDF
+- **Kód** — syntax highlighting, kopírování, iterace
+
+A pak jsou tu **Projects**. Představte si to jako workspace — nahrajete soubory, nastavíte system prompt, a Claude má kontext napříč konverzacemi. Nemusíte pokaždé vysvětlovat kdo jste a co děláte.
+
+**Můj komentář:** Tento celý web běží v Claude Projectu. Mám tam CLAUDE.md s pravidly, strukturu projektu, SEO checklist. Když řeknu "napiš nový článek," Claude ví do jakého formátu, jakým tónem, s jakými meta tagy. Ušetří to neskutečné množství copy-paste. ChatGPT má GPTs, ale Projects jsou flexibilnější pro reálnou práci.
+
+## 3. Claude Code — AI agent v terminálu
+
+Tady to začíná být zajímavé pro vývojáře. Claude Code není chatbot — je to **terminálový agent**, který:
+
+- Čte celý váš codebase (ne jen otevřený soubor)
+- Edituje soubory napříč projektem
+- Spouští příkazy v terminálu
+- Commituje a vytváří pull requesty
+- Pracuje s git worktrees pro izolované změny
+
+A to není všechno. Claude Code má:
+
+- **Hooks** — automatické akce při událostech (před commitem spustí lint, po editaci zkontroluje typy)
+- **MCP servery** — napojení na GitHub, Supabase, Figma, Chrome DevTools a desítky dalších
+- **Subagenti** — paralelní práce na více úlohách současně
+- **Skills** — předpřipravené workflow pro brainstorming, code review, TDD
+
+Od nedávna funguje nejen v terminálu, ale i jako **desktop app** (Mac/Windows), **web app** (claude.ai/code) a **IDE extensions** (VS Code, JetBrains).
+
+**Můj komentář:** Claude Code mi změnil způsob, jakým programuji. Řeknu co chci, Claude to udělá, já review. Copilot doplňuje řádky — Claude Code staví celé features. Podrobněji v mém článku o [vibe codingu s Claude Code](/blog/claude-code-vibe-coding).
+
+## 4. Computer Use — Claude ovládá váš počítač
+
+Tohle zní jako sci-fi, ale je to reálná funkce. Claude dokáže:
+
+1. Vidět screenshot vaší obrazovky
+2. Identifikovat UI elementy
+3. Klikat, psát, navigovat
+
+V praxi to znamená, že mu můžete říct "otevři browser, jdi na tuhle stránku, vyplň formulář a stáhni výsledek" — a on to udělá.
+
+Kde to má smysl:
+- **Automatizace opakovaných UI úloh** — vyplňování formulářů, scraping vizuálních dat
+- **Testování** — projít UI flow a ověřit že funguje
+- **Přístupnost** — analyzovat UI z pohledu uživatele
+
+Kde ne (zatím):
+- Komplexní multi-step workflow — občas se ztratí
+- Rychlost — je to pomalejší než klasický Selenium/Playwright
+- Spolehlivost — na 90% úlohách funguje, na 10% ne
+
+**Můj komentář:** Wow efekt je obrovský. Praktické využití zatím niche. Ale směr je jasný — za rok bude computer use standardní způsob automatizace. Teď je to v "impresivní demo" fázi. Používám to na ad-hoc úlohy, kde se mi nechce psát Playwright skript kvůli jednorázové akci.
+
+## 5. Tool Use & MCP protokol
+
+Claude není uzavřený chatbot — umí **volat externí nástroje**. Přes API mu definujete funkce (databázové dotazy, API volání, kalkulačky, cokoliv), a Claude je sám volá, když to potřebuje.
+
+A pak je tu **MCP** — Model Context Protocol. Otevřený standard od Anthropic pro propojení AI s externími službami. Jeden protokol, desítky serverů:
+
+- **GitHub** — čte issues, vytváří PR, komentuje
+- **Supabase** — dotazuje databázi, spouští migrace
+- **Figma** — čte designy, generuje kód z komponent
+- **Chrome DevTools** — debuguje přímo v browseru
+- **Google Calendar, Gmail** — čte a vytváří události, emaily
+
+MCP ekosystém roste exponenciálně. A protože je to otevřený standard, funguje nejen s Claude, ale i s dalšími AI nástroji.
+
+**Můj komentář:** MCP je podle mě nejdůležitější věc, co Anthropic udělal po samotném Claudovi. Podrobný rozbor jsem napsal v [článku o MCP protokolu](/blog/mcp-protocol-revoluce). Krátká verze: mění to AI z "odpovídače na otázky" na "agenta, který dělá věci."
+
+## 6. System prompts a Constitutional AI
+
+Claude se chová jinak než GPT. Ne náhodou — je trénovaný jinak.
+
+**Constitutional AI** znamená, že Claude má sadu principů, podle kterých se rozhoduje. Není to jen RLHF (lidé říkají "tohle je dobrá odpověď"). Claude má explicitní pravidla: buď upřímný, přiznej nejistotu, odmítni když nevíš.
+
+V praxi to znamená:
+- **Méně halucinací** — Claude častěji řekne "nevím" místo vymýšlení
+- **Lepší system prompty** — Claude dodržuje instrukce konzistentněji
+- **Předvídatelné chování** — menší variance mezi odpověďmi
+
+System prompt u Claude funguje výrazně lépe než u konkurence. Můžete nastavit:
+- Tón a osobnost (formální vs. neformální)
+- Formát odpovědí (vždy JSON, vždy česky, vždy s příklady)
+- Omezení (neodpovídej na X, vždy ověř Y)
+- Kontext (jsi expert na Z, pracuješ pro firmu W)
+
+**Můj komentář:** System prompt je to první, co nastavuji v každém projektu. Claude ho bere vážně — když řeknete "odpovídej vždy česky a maximálně ve třech větách," tak to dělá. Konzistentně. U GPT jsem musel system prompt opakovat v konverzaci, protože ho "zapomněl." Claude ne.
+
+---
+
+## Rychlé tipy
+
+Pár dalších věcí, které stojí za zmínku:
+
+**200k tokenů kontextu** — Claude zpracuje ~150 000 slov najednou. Celá kniha, celý codebase, celý dataset. Opus 4.6 má dokonce kontext **1 milion tokenů**. ChatGPT má 128k, Gemini 1M (ale kvalita na dlouhém kontextu je u Claude konzistentně lepší).
+
+**PDF a obrázky přímo v chatu** — Nahrajete PDF, Claude ho přečte a analyzuje. Totéž s obrázky, screenshoty, diagramy. Nemusíte nic konvertovat.
+
+**Structured output** — API umí vracet čistý JSON podle vašeho schématu. Žádné parsování textu, žádné regex hacky. Definujete strukturu, Claude ji vyplní.
+
+**Prompt caching** — Opakované části promptu (system prompt, velké dokumenty) se cachují na straně API. Výsledek: výrazná úspora peněz i latence při opakovaných voláních.
+
+**Opus vs. Sonnet vs. Haiku** — Tři modely pro tři use cases. Opus je nejmocnější (těžký reasoning, architektura). Sonnet je sweet spot (denní práce, kód, analýza). Haiku je rychlý a levný (klasifikace, extrakce, jednoduché úlohy). Většinou chcete Sonnet.
+
+**Batch API** — Pošlete tisíce požadavků najednou za poloviční cenu. Výsledky do 24 hodin. Ideální pro zpracování velkých datasetů, kde nepotřebujete odpověď okamžitě.
+
+**Claude na mobilu** — iOS i Android app. Funguje překvapivě dobře — artifacts, obrázky, dlouhé konverzace. Používám na cestách víc než bych čekal.
+
+---
+
+## Závěr
+
+Claude není chatbot. Je to platforma — s agenty, nástroji, rozšířeními a ekosystémem, který roste každý týden.
+
+Většina lidí využívá možná 10 % toho, co umí. A to je škoda, protože těch zbylých 90 % je to, co z Claude dělá skutečně užitečný nástroj — ne jen hezkou hračku na generování textů.
+
+Pokud jste zvědaví jak jsem se k Claude dostal a proč u něj zůstávám, přečtěte si [celý příběh od free tieru po závislost](/blog/od-free-tieru-po-zavislost). A pokud vás zajímá jak Claude stojí proti ChatGPT, mám i [upřímné srovnání](/blog/claude-vs-chatgpt-2026).
+
+Vyzkoušejte si to na [claude.ai](https://claude.ai) — free tier stačí na to, abyste pochopili o co jde. A pak se rozhodněte sami.
