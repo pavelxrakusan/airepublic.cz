@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { Tool, ContentItem } from '@/lib/types'
-import { getCategoryLabel } from '@/lib/mdx'
+import { getCategoryLabel } from '@/lib/labels'
 
 function StarRating({ rating }: { rating: number }) {
   return (

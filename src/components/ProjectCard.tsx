@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { getStatusLabel } from '@/lib/mdx'
+import { getStatusLabel } from '@/lib/labels'
 import type { Project, ContentItem } from '@/lib/types'
 
 const statusColors: Record<string, string> = {

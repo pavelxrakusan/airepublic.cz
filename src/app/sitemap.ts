@@ -15,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/projekty`, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/o-mne`, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${baseUrl}/terminal`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${baseUrl}/playground`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
   ]
 
   const blogRoutes: MetadataRoute.Sitemap = blogSlugs.map((slug) => ({

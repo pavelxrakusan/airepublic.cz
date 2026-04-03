@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { getAllContent } from '@/lib/mdx'
 import type { BlogPost } from '@/lib/types'
 import { ArticleCard } from '@/components/ArticleCard'
+import { AnimatedPage, StaggerItem } from '@/components/motion/AnimatedGrid'
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://airepublic.cz'
 
@@ -21,18 +22,15 @@ export default function BlogPage() {
   const posts = getAllContent<BlogPost>('blog')
 
   return (
-    <div className="mx-auto max-w-5xl px-6 pt-24 pb-16">
-      <header className="mb-12">
-        <h1 className="mb-4 text-4xl font-bold tracking-tight">Blog</h1>
-        <p className="text-lg text-muted">
-          Novinky, návody a postřehy ze světa umělé inteligence.
-        </p>
-      </header>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {posts.map((post) => (
-          <ArticleCard key={post.slug} post={post} />
-        ))}
-      </div>
-    </div>
+    <AnimatedPage
+      title="Blog"
+      description="Novinky, návody a postřehy ze světa umělé inteligence."
+    >
+      {posts.map((post) => (
+        <StaggerItem key={post.slug}>
+          <ArticleCard post={post} />
+        </StaggerItem>
+      ))}
+    </AnimatedPage>
   )
 }

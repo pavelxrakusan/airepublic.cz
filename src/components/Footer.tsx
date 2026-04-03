@@ -21,6 +21,9 @@ export function Footer() {
           <Link href="/terminal" className="text-sm text-muted transition-colors hover:text-foreground">
             Terminal
           </Link>
+          <Link href="/playground" className="text-sm text-muted transition-colors hover:text-foreground">
+            Playground
+          </Link>
         </nav>
       </div>
     </footer>

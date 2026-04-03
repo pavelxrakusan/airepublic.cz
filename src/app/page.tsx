@@ -19,12 +19,9 @@ export const metadata: Metadata = {
   },
 }
 import type { BlogPost, Tool, Project } from '@/lib/types'
-import { ArticleCard } from '@/components/ArticleCard'
-import { ToolCard } from '@/components/ToolCard'
-import { ProjectCard } from '@/components/ProjectCard'
 import { HeroParticles } from '@/components/HeroParticles'
 import { PixelMascot } from '@/components/PixelMascot'
-import Link from 'next/link'
+import { HomeContent } from '@/components/motion/HomeContent'
 
 export default function HomePage() {
   const posts = getAllContent<BlogPost>('blog').slice(0, 3)
@@ -109,55 +106,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══ Content ═══ */}
-      <div className="mx-auto max-w-5xl px-6 pb-16">
-        {posts.length > 0 && (
-          <section className="mb-20 pt-12">
-            <div className="mb-8 flex items-center justify-between">
-              <h2 className="text-2xl font-bold tracking-tight">Poslední články</h2>
-              <Link href="/blog" className="text-sm text-muted transition-colors hover:text-foreground">
-                Všechny články &rarr;
-              </Link>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {posts.map((post) => (
-                <ArticleCard key={post.slug} post={post} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {tools.length > 0 && (
-          <section className="mb-20">
-            <div className="mb-8 flex items-center justify-between">
-              <h2 className="text-2xl font-bold tracking-tight">Recenze nástrojů</h2>
-              <Link href="/nastroje" className="text-sm text-muted transition-colors hover:text-foreground">
-                Všechny nástroje &rarr;
-              </Link>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {tools.map((tool) => (
-                <ToolCard key={tool.slug} tool={tool} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {projects.length > 0 && (
-          <section className="mb-20">
-            <div className="mb-8 flex items-center justify-between">
-              <h2 className="text-2xl font-bold tracking-tight">Projekty</h2>
-              <Link href="/projekty" className="text-sm text-muted transition-colors hover:text-foreground">
-                Všechny projekty &rarr;
-              </Link>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {projects.map((project) => (
-                <ProjectCard key={project.slug} project={project} />
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
+      <HomeContent posts={posts} tools={tools} projects={projects} />
     </>
   )
 }
