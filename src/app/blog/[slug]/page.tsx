@@ -6,6 +6,7 @@ import { mdxComponents } from '@/lib/mdx-components'
 import type { BlogPost } from '@/lib/types'
 import Link from 'next/link'
 import Image from 'next/image'
+import ShareButtons from '@/components/ShareButtons'
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://airepublic.cz'
 
@@ -138,6 +139,12 @@ export default async function BlogPostPage({
             ))}
           </div>
         )}
+        <div className="mt-4">
+          <ShareButtons
+            url={`${baseUrl}/blog/${slug}`}
+            title={post.frontmatter.title}
+          />
+        </div>
       </header>
       <div className="prose">
         <MDXRemote source={post.content} components={mdxComponents} />
