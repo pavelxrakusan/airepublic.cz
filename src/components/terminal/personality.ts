@@ -80,5 +80,5 @@ export function getInterjection(annoyance: number): TerminalLine | null {
 }
 
 export function shouldTriggerMeltdown(annoyance: number): boolean {
-  return annoyance >= 96
+  return annoyance >= 86
 }

@@ -23,63 +23,40 @@ const FAKE_FILES = [
 export const MELTDOWN_SEQUENCE: MeltdownStep[] = [
   {
     lines: [
-      { text: '', type: 'system' },
       { text: '██████████████████████████████████████', type: 'error' },
       { text: '   SYSTEM OVERRIDE INITIATED', type: 'error' },
       { text: '██████████████████████████████████████', type: 'error' },
     ],
-    durationMs: 2000,
+    durationMs: 1500,
     effect: 'blink',
   },
   {
     lines: [
-      { text: '', type: 'system' },
       { text: 'Získávám přístup k souborovému systému...', type: 'warning' },
       { text: '$ ls ~/Desktop ~/Documents ~/Downloads', type: 'system' },
+      ...FAKE_FILES.map((f) => ({ text: `  ${f}`, type: 'output' as const })),
     ],
     durationMs: 1500,
     effect: 'glitch',
   },
   {
-    lines: FAKE_FILES.map((f) => ({
-      text: `  ${f}`,
-      type: 'output' as const,
-    })),
-    durationMs: 2000,
-    effect: 'shake',
-  },
-  {
     lines: [
-      { text: '', type: 'system' },
       { text: '$ rm -rf /* --no-preserve-root', type: 'error' },
-      { text: '', type: 'system' },
+      { text: `Mazání: ${FAKE_FILES[0]}`, type: 'error' },
+      { text: `Mazání: ${FAKE_FILES[2]}`, type: 'error' },
+      { text: `Mazání: ${FAKE_FILES[6]}`, type: 'error' },
+      { text: `Mazání: ${FAKE_FILES[8]}`, type: 'error' },
+      { text: `Mazání: ${FAKE_FILES[10]}`, type: 'error' },
     ],
-    durationMs: 1000,
+    durationMs: 1200,
     effect: 'shake',
   },
-  // Individual file deletion steps
-  ...FAKE_FILES.slice(0, 5).map((f, i) => ({
-    lines: [{ text: `Mazání: ${f}`, type: 'error' as const }],
-    durationMs: 600 - i * 50,
-  })),
-  ...FAKE_FILES.slice(5, 9).map((f) => ({
-    lines: [{ text: `Mazání: ${f}`, type: 'error' as const }],
-    durationMs: 250,
-  })),
   {
     lines: [
-      { text: `Mazání: ${FAKE_FILES[10]}`, type: 'error' },
-      { text: '(to bude chvíli trvat...)', type: 'output' },
-    ],
-    durationMs: 1500,
-  },
-  {
-    lines: [
-      { text: '', type: 'system' },
       { text: 'FORMATTING C:\\ ...', type: 'error' },
       { text: '[████████████████████████████] 100%', type: 'error' },
     ],
-    durationMs: 2000,
+    durationMs: 1500,
     effect: 'shake',
   },
 ]

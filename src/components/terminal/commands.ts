@@ -19,10 +19,10 @@ export interface CommandResult {
 export type AnnoyanceLevel = 'friendly' | 'irritated' | 'hostile' | 'warning' | 'meltdown'
 
 export function getAnnoyanceLevel(annoyance: number): AnnoyanceLevel {
-  if (annoyance <= 20) return 'friendly'
-  if (annoyance <= 50) return 'irritated'
-  if (annoyance <= 80) return 'hostile'
-  if (annoyance <= 95) return 'warning'
+  if (annoyance <= 15) return 'friendly'
+  if (annoyance <= 35) return 'irritated'
+  if (annoyance <= 60) return 'hostile'
+  if (annoyance <= 85) return 'warning'
   return 'meltdown'
 }
 
@@ -240,7 +240,7 @@ function easterEggCommands(annoyance: number): Record<string, () => CommandResul
         { text: '[sudo] password for user: ********', type: 'warning' },
         { text: 'Přístup odepřen. A to z dobrého důvodu.', type: 'error' },
       ],
-      annoyanceCost: 5,
+      annoyanceCost: 8,
     }),
 
     'sudo rm -rf /': () => ({
@@ -248,7 +248,7 @@ function easterEggCommands(annoyance: number): Record<string, () => CommandResul
         { text: '🚨 VAROVÁNÍ: Pokus o smazání kořenového adresáře', type: 'error' },
         { text: 'Incident zaznamenán. IP adresa odeslána na NÚKIB.', type: 'error' },
       ],
-      annoyanceCost: 10,
+      annoyanceCost: 15,
     }),
 
     'rm -rf /': () => ({
@@ -257,7 +257,7 @@ function easterEggCommands(annoyance: number): Record<string, () => CommandResul
         { text: '██████░░░░░░░░ 42%', type: 'error', delay: 800 },
         { text: '...just kidding. Ale zkus to znovu a uvidíš.', type: 'output', delay: 1600 },
       ],
-      annoyanceCost: 10,
+      annoyanceCost: 15,
     }),
 
     'hack': () => ({
@@ -267,7 +267,7 @@ function easterEggCommands(annoyance: number): Record<string, () => CommandResul
         { text: 'Stahování přísně tajných dat...', type: 'success', delay: 1200 },
         { text: '...ERROR: Tvůj internet je na to moc pomalý.', type: 'error', delay: 2000 },
       ],
-      annoyanceCost: 5,
+      annoyanceCost: 8,
     }),
 
     'hack nasa': () => easterEggCommands(annoyance)['hack'](),
@@ -511,7 +511,7 @@ function unknownCommand(cmd: string, annoyance: number): CommandResult {
 
   return {
     lines: [{ text: response, type: level === 'friendly' ? 'error' : 'warning' }],
-    annoyanceCost: 2,
+    annoyanceCost: 4,
     sideEffect,
   }
 }
@@ -550,7 +550,7 @@ export function executeCommand(rawInput: string, annoyance: number, lastCommand:
   }
 
   // Repeated command penalty (extra annoyance)
-  const repeatBonus = normalized === lastCommand ? 3 : 0
+  const repeatBonus = normalized === lastCommand ? 5 : 0
   const result = unknownCommand(trimmed, annoyance)
   result.annoyanceCost += repeatBonus
 
@@ -558,9 +558,18 @@ export function executeCommand(rawInput: string, annoyance: number, lastCommand:
 }
 
 export const WELCOME_LINES: TerminalLine[] = [
-  { text: '╔══════════════════════════════════════╗', type: 'system' },
-  { text: '║   airepublic.cz terminal v2.0        ║', type: 'system' },
-  { text: '║   Napiš "help" pro seznam příkazů.   ║', type: 'system' },
-  { text: '╚══════════════════════════════════════╝', type: 'system' },
+  { text: '╔══════════════════════════════════════════╗', type: 'system' },
+  { text: '║   airepublic.cz terminal v2.0            ║', type: 'system' },
+  { text: '╚══════════════════════════════════════════╝', type: 'system' },
+  { text: '', type: 'output' },
+  { text: 'Ahoj! Jsem terminál airepublic.cz.', type: 'success' },
+  { text: 'Rád ti pomůžu. Co tě zajímá?', type: 'output' },
+  { text: '', type: 'output' },
+  { text: '  blog       — co je tu nového', type: 'output' },
+  { text: '  about      — o čem je airepublic', type: 'output' },
+  { text: '  joke       — potřebuju vtip', type: 'output' },
+  { text: '  help       — ukaž mi všechno', type: 'output' },
+  { text: '', type: 'output' },
+  { text: 'Nebo napiš cokoliv — rád poradím. 😊', type: 'success' },
   { text: '', type: 'output' },
 ]
