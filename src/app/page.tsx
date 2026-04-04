@@ -49,7 +49,7 @@ export default function HomePage() {
             className="max-w-xl text-center text-xl leading-relaxed text-muted animate-fade-in-up"
             style={{ animationDelay: '1.5s' }}
           >
-            Měsíc s&nbsp;Claudem a&nbsp;už si neumím představit život bez AI.
+            Žiju s&nbsp;AI každý den a&nbsp;už si neumím představit práci bez ní.
             Tady píšu o&nbsp;tom co testuji, co funguje a&nbsp;co je hype.
           </p>
 
@@ -74,7 +74,7 @@ export default function HomePage() {
         {/* Mobile subtitle + badges (below mascot) */}
         <div className="flex flex-col items-center gap-4 px-6 pb-8 sm:hidden">
           <p className="max-w-sm text-center text-base leading-relaxed text-muted">
-            Měsíc s&nbsp;Claudem a&nbsp;už si neumím představit život bez AI.
+            Žiju s&nbsp;AI každý den a&nbsp;už si neumím představit práci bez ní.
             Tady píšu o&nbsp;tom co testuji, co funguje a&nbsp;co je hype.
           </p>
           <div className="flex flex-wrap justify-center gap-1.5">
